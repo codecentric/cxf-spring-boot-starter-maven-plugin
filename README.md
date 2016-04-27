@@ -125,14 +125,14 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
 
 ```
 <build>
-		<plugins>
-			<plugin>
-				<groupId>de.codecentric</groupId>
-				<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</plugin>
-		</plugins>
-	</build>
+	<plugins>
+		<plugin>
+			<groupId>de.codecentric</groupId>
+			<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</plugin>
+	</plugins>
+</build>
 ```
 
 
@@ -146,7 +146,7 @@ mvn cxf-spring-boot-starter:generate
 
 ### Todos
 
-* add the eclipse m2e workaround-stuff
+* add the eclipse m2e workaround-stuff (but should be fixed with 2.4 - see [https://github.com/mojohaus/jaxws-maven-plugin/issues/5](https://github.com/mojohaus/jaxws-maven-plugin/issues/5))
 
 [cxf-spring-boot-starter]:https://github.com/jonashackt/cxf-spring-boot-starter
 [jaxws-maven-plugin]:https://jax-ws-commons.java.net/jaxws-maven-plugin/
