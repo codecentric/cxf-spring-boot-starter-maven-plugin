@@ -19,7 +19,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "process-wsdl")
+@Mojo(name = "generate")
 public class BootCxfMojo extends AbstractMojo {
     
     @Component
@@ -34,15 +34,27 @@ public class BootCxfMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         getLog().info("cxf-spring-boot-starter-maven-plugin will now process your WSDL. Lean back and enjoy :)");
         
+        getLog().info("STEP 1: Generating JAX-B Classfiles...");
+        generateJaxbClassFiles();
+        
+        getLog().info("STEP 2: Adding the generated Java-Classes to project´s classpath...");
+        addGeneratedClasses2Cp();
+    }
+
+    private void generateJaxbClassFiles() throws MojoExecutionException {
         executeMojo(
                 /*
                  * Generate Java-Classes inkl. JAXB-Bindings from WSDL & imported XSD
-                 * See Doku at https://jax-ws-commons.java.net/jaxws-maven-plugin/usage.html
+                 * See Doku at http://www.mojohaus.org/jaxws-maven-plugin/
+                 * 
+                 * Attention: The project has been moved from codehaus to project metro in 2007:
+                 * https://jax-ws-commons.java.net/jaxws-maven-plugin/ and then back to codehaus
+                 * in 2015, where it is developed further: https://github.com/mojohaus/jaxws-maven-plugin
                  */
                 plugin(
-                    groupId("org.jvnet.jax-ws-commons"),
+                    groupId("org.codehaus.mojo"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.3"),
+                    version("2.4.1"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",
@@ -52,10 +64,10 @@ public class BootCxfMojo extends AbstractMojo {
                 goal("wsimport"),
                 configuration(
                     /*
-                     * See https://jax-ws-commons.java.net/jaxws-maven-plugin/wsimport-mojo.html
+                     * See http://www.mojohaus.org/jaxws-maven-plugin/wsimport-mojo.html
                      */
-                    element(name("wsdlDirectory"), "${project.directory}/src/main/resources/wsdl/"),
-                    element(name("sourceDestDir"), "${project.directory}/target/generated-sources/wsdlimport"),
+                    element(name("wsdlDirectory"), "src/main/resources/wsdl/"),
+                    element(name("sourceDestDir"), "target/generated-sources/wsdlimport"),
                     /*
                      * For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570
                      */
@@ -84,14 +96,17 @@ public class BootCxfMojo extends AbstractMojo {
                     pluginManager
                 )
             );
-        
+    }
+    
+    private void addGeneratedClasses2Cp() throws MojoExecutionException {
         /*
          * Add the generated Java-Classes to classpath
          */
         executeMojo(
                 plugin(
                         groupId("org.codehaus.mojo"),
-                        artifactId("build-helper-maven-plugin")
+                        artifactId("build-helper-maven-plugin"),
+                        version("1.10")
                 ),
                 goal("add-source"),
                 configuration(

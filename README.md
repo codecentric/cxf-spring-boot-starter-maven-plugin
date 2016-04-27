@@ -117,10 +117,31 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
 * This works also for complex imports of many XSD files, that inherit other XSDs themselfs
 * The generated JAX-B Classfiles will be added to your projects classpath - ready to map & transform into whatever you want
 
-### Documentation
+### HowTo
 
 * Put your WSDL into /src/main/resources/wsdl/ - and add your XSDs, so they could be imported correct (relatively)
 * If you want to tweak your Namespace-Names, put a binding.xml also into /src/main/resources/wsdl/
+* add this plugin to your pom´s build-section:
+
+```
+<build>
+		<plugins>
+			<plugin>
+				<groupId>de.codecentric</groupId>
+				<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</plugin>
+		</plugins>
+	</build>
+```
+
+
+* execute the plugin with:
+
+```
+mvn cxf-spring-boot-starter:generate
+```
+
 * The generated JAX-B Classfiles will be placed in target/generated-sources/wsdlimport 
 
 ### Todos
