@@ -1,6 +1,7 @@
 cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 =============================
 [![Build Status](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin.svg?branch=master)](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/)
 [![Dependency Status](https://www.versioneye.com/user/projects/5720e321fcd19a004544247d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5720e321fcd19a004544247d)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 

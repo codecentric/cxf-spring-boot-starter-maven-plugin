@@ -1,0 +1,9 @@
+decrypt:
+  settings.xml: "cxf-spring-boot-starter-maven-plugin/settings.xml.asc"
+  pubring.gpg: "cxf-spring-boot-starter-maven-plugin/pubring.gpg.asc"
+  secring.gpg: "cxf-spring-boot-starter-maven-plugin/secring.gpg.asc"
+release:
+  script: |
+    mvn versions:set "-DnewVersion=${tag}"
+    git commit -am "${tag}"
+    mvn clean deploy -P central-deploy --settings /home/r/settings.xml
