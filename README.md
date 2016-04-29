@@ -6,6 +6,7 @@ cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 
 While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves as a Maven dependency, something that will be executed in the build-section is not delivered in such a way. But the generation of JAX-B Classfiles is a good candidate to run inside the build-process - so the resulting files aren´t checked into source control system. The configuration e.g. of the [jaxws-maven-plugin] is rather complex to work properly and one has to do some research, till all necessary configuration parameters are set properly. Something like this has to be done:
 
+
 ```
 <build>
         <plugins>
@@ -127,18 +128,31 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
 
 ```
 <build>
-	<plugins>
-		<plugin>
-			<groupId>de.codecentric</groupId>
-			<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</plugin>
-	</plugins>
+    <plugins>
+        <plugin>
+            <groupId>de.codecentric</groupId>
+            <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
+            <version>1.0.3-SNAPSHOT</version>
+            <executions>
+				<execution>
+					<goals>
+						<goal>generate</goal>
+					</goals>
+				</execution>
+			</executions>
+        </plugin>
+    </plugins>
 </build>
 ```
 
 
-* execute the plugin with:
+* it will be executed, if you run a standard:
+
+```
+mvn clean generate-sources
+```
+
+(or directly):
 
 ```
 mvn cxf-spring-boot-starter:generate
@@ -149,6 +163,7 @@ mvn cxf-spring-boot-starter:generate
 ### Todos
 
 * add the eclipse m2e workaround-stuff (but should be fixed with 2.4 - see [https://github.com/mojohaus/jaxws-maven-plugin/issues/5](https://github.com/mojohaus/jaxws-maven-plugin/issues/5))
+
 
 [cxf-spring-boot-starter]:https://github.com/jonashackt/cxf-spring-boot-starter
 [jaxws-maven-plugin]:https://jax-ws-commons.java.net/jaxws-maven-plugin/

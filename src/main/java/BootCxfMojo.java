@@ -16,16 +16,18 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "generate")
+@Mojo(name = "generate", defaultPhase=LifecyclePhase.GENERATE_SOURCES)
 public class BootCxfMojo extends AbstractMojo {
     
-    @Component
+    @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject mavenProject;
 
-    @Component
+    @Parameter( defaultValue = "${session}", readonly = true )
     private MavenSession mavenSession;
 
     @Component
