@@ -18,9 +18,9 @@ While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves
 	        <!-- Generate Java-Classes inkl. JAXB-Bindings from WSDL & imported XSD -->
 	        <!-- See Doku at https://jax-ws-commons.java.net/jaxws-maven-plugin/usage.html -->
 			<plugin>
-				<groupId>org.jvnet.jax-ws-commons</groupId>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.3</version>
+				<version>2.4.1</version>
 				<configuration>
 					<!-- See https://jax-ws-commons.java.net/jaxws-maven-plugin/wsimport-mojo.html -->
 					<wsdlDirectory>src/main/resources/wsdl/</wsdlDirectory>
