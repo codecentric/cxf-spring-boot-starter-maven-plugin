@@ -23,6 +23,14 @@ import org.apache.maven.project.MavenProject;
 
 @Mojo(name = "generate", defaultPhase=LifecyclePhase.GENERATE_SOURCES)
 public class BootCxfMojo extends AbstractMojo {
+ 
+    private static final String LOG_PREFIX = "CXF-BOOT-MAVEN-PLUGIN STEP ";
+    
+    private static final String TEST_WSDL_RESOURCE_FOLDER = "src/test/resources/wsdl/";
+    private static final String TEST_GENERATED_SOURCES_TARGET_FOLDER = "target/test/generated-sources/wsdlimport";   
+    
+    private static final String WSDL_RESOURCE_FOLDER = "src/main/resources/wsdl/";
+    private static final String GENERATED_SOURCES_TARGET_FOLDER = "target/generated-sources/wsdlimport";
     
     @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject mavenProject;
@@ -36,14 +44,20 @@ public class BootCxfMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         getLog().info("cxf-spring-boot-starter-maven-plugin will now process your WSDL. Lean back and enjoy :)");
         
-        getLog().info("STEP 1: Generating JAX-B Classfiles...");
-        generateJaxbClassFiles();
+        getLog().info(LOG_PREFIX + "1: Generating JAX-B Classfiles for Test purpose, if there...");
+        generateJaxbClassFiles(TEST_WSDL_RESOURCE_FOLDER, TEST_GENERATED_SOURCES_TARGET_FOLDER);
         
-        getLog().info("STEP 2: Adding the generated Java-Classes to project´s classpath...");
-        addGeneratedClasses2Cp();
+        getLog().info(LOG_PREFIX + "2: Adding the generated Java-Classes to project´s classpath...");
+        addGeneratedClasses2Cp(TEST_GENERATED_SOURCES_TARGET_FOLDER);
+        
+        getLog().info(LOG_PREFIX + "3: Generating JAX-B Classfiles, if there...");
+        generateJaxbClassFiles(WSDL_RESOURCE_FOLDER, GENERATED_SOURCES_TARGET_FOLDER);
+        
+        getLog().info(LOG_PREFIX + "4: Adding the generated Java-Classes to project´s classpath...");
+        addGeneratedClasses2Cp(GENERATED_SOURCES_TARGET_FOLDER);
     }
 
-    private void generateJaxbClassFiles() throws MojoExecutionException {
+    private void generateJaxbClassFiles(String wsdlResourceFolder, String generatedSourcesTargetFolder) throws MojoExecutionException {
         executeMojo(
                 /*
                  * Generate Java-Classes inkl. JAXB-Bindings from WSDL & imported XSD
@@ -68,8 +82,8 @@ public class BootCxfMojo extends AbstractMojo {
                     /*
                      * See http://www.mojohaus.org/jaxws-maven-plugin/wsimport-mojo.html
                      */
-                    element(name("wsdlDirectory"), "src/main/resources/wsdl/"),
-                    element(name("sourceDestDir"), "target/generated-sources/wsdlimport"),
+                    element(name("wsdlDirectory"), wsdlResourceFolder),
+                    element(name("sourceDestDir"), generatedSourcesTargetFolder),
                     /*
                      * For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570
                      */
@@ -79,7 +93,7 @@ public class BootCxfMojo extends AbstractMojo {
                      * the binding.xml in the given directory is found automatically,
                      * because the directory is scanned for '.xml'-Files
                      */
-                    element("bindingDirectory", "src/main/resources/wsdl"),
+                    element("bindingDirectory", wsdlResourceFolder),
                     /*
                      * Arguments for JAXB2-Generator behind JAX-WS-Frontend
                      */
@@ -100,7 +114,7 @@ public class BootCxfMojo extends AbstractMojo {
             );
     }
     
-    private void addGeneratedClasses2Cp() throws MojoExecutionException {
+    private void addGeneratedClasses2Cp(String generatedSourcesTargetFolder) throws MojoExecutionException {
         /*
          * Add the generated Java-Classes to classpath
          */
@@ -113,7 +127,7 @@ public class BootCxfMojo extends AbstractMojo {
                 goal("add-source"),
                 configuration(
                         element("sources", 
-                                element("source", "target/generated-sources/wsdlimport"))
+                                element("source", generatedSourcesTargetFolder))
                         ),
                 executionEnvironment(
                         mavenProject,
