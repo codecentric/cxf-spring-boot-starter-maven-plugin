@@ -161,11 +161,12 @@ mvn cxf-spring-boot-starter:generate
 
 * The generated JAX-B Classfiles will be placed in target/generated-sources/wsdlimport 
 
-### Todos
+### Dones
 
-* add the eclipse m2e workaround-stuff (but should be fixed with 2.4 - see [https://github.com/mojohaus/jaxws-maven-plugin/issues/5](https://github.com/mojohaus/jaxws-maven-plugin/issues/5))
+* made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
 
 
 [cxf-spring-boot-starter]:https://github.com/jonashackt/cxf-spring-boot-starter
-[jaxws-maven-plugin]:https://jax-ws-commons.java.net/jaxws-maven-plugin/
+[jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
+[stackoverflow:eclipse-m2e-lifecycle]:http://stackoverflow.com/a/26447353/4964553
