@@ -133,7 +133,7 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
         <plugin>
             <groupId>de.codecentric</groupId>
             <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-            <version>1.0.4.RELEASE</version>
+            <version>1.0.6.RELEASE</version>
             <executions>
 				<execution>
 					<goals>
