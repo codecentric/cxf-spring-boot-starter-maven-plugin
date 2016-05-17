@@ -23,14 +23,25 @@ import org.apache.maven.project.MavenProject;
 
 @Mojo(name = "generate", defaultPhase=LifecyclePhase.GENERATE_SOURCES)
 public class BootCxfMojo extends AbstractMojo {
- 
-    private static final String LOG_PREFIX = "CXF-BOOT-MAVEN-PLUGIN STEP ";
+
+    /**
+     * WSDL Resource Directory
+     */
+    @Parameter( property = "generate.wsdl.dir", defaultValue = "src/main/resources/wsdl/" )
+    private String wsdldir;
     
-    private static final String TEST_WSDL_RESOURCE_FOLDER = "src/test/resources/wsdl/";
-    private static final String TEST_GENERATED_SOURCES_TARGET_FOLDER = "target/test/generated-sources/wsdlimport";   
-    
-    private static final String WSDL_RESOURCE_FOLDER = "src/main/resources/wsdl/";
     private static final String GENERATED_SOURCES_TARGET_FOLDER = "target/generated-sources/wsdlimport";
+    
+    /**
+     * Test-WSDL Resource Directory
+     */
+    @Parameter( property = "generate.test.wsdl.dir", defaultValue = "src/test/resources/wsdl/" )
+    private String testwsdldir;
+    
+    private static final String TEST_GENERATED_SOURCES_TARGET_FOLDER = "target/test/generated-sources/wsdlimport";  
+    
+    private static final String LOG_PREFIX = "CXF-BOOT-MAVEN-PLUGIN STEP ";
+
     
     @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject mavenProject;
@@ -45,13 +56,13 @@ public class BootCxfMojo extends AbstractMojo {
         getLog().info("cxf-spring-boot-starter-maven-plugin will now process your WSDL. Lean back and enjoy :)");
         
         getLog().info(LOG_PREFIX + "1: Generating JAX-B Classfiles for Test purpose, if there...");
-        generateJaxbClassFiles(TEST_WSDL_RESOURCE_FOLDER, TEST_GENERATED_SOURCES_TARGET_FOLDER);
+        generateJaxbClassFiles(testwsdldir, TEST_GENERATED_SOURCES_TARGET_FOLDER);
         
         getLog().info(LOG_PREFIX + "2: Adding the generated Java-Classes to project´s classpath...");
         addGeneratedClasses2Cp(TEST_GENERATED_SOURCES_TARGET_FOLDER);
         
         getLog().info(LOG_PREFIX + "3: Generating JAX-B Classfiles, if there...");
-        generateJaxbClassFiles(WSDL_RESOURCE_FOLDER, GENERATED_SOURCES_TARGET_FOLDER);
+        generateJaxbClassFiles(wsdldir, GENERATED_SOURCES_TARGET_FOLDER);
         
         getLog().info(LOG_PREFIX + "4: Adding the generated Java-Classes to project´s classpath...");
         addGeneratedClasses2Cp(GENERATED_SOURCES_TARGET_FOLDER);

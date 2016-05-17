@@ -161,12 +161,26 @@ mvn cxf-spring-boot-starter:generate
 
 * The generated JAX-B Classfiles will be placed in target/generated-sources/wsdlimport 
 
+
+### Set WSDL Directory (optional)
+
+Sometimes, a Service-API-Definition relies on a specific Foldername - e.g. because XSD-Imports inherit these Foldernames (like the [bipro.net]-Services do). If this is the case, you can optionally pass a wsdl-Directory parameter:
+
+```
+<configuration>
+	<wsdldir>src/main/resources/my/custom/wsdl/path</wsdldir>
+</configuration>
+```
+
+
 ### Dones
 
 * made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
+
 
 
 [cxf-spring-boot-starter]:https://github.com/jonashackt/cxf-spring-boot-starter
 [jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
 [stackoverflow:eclipse-m2e-lifecycle]:http://stackoverflow.com/a/26447353/4964553
+[bipro.net]:https://www.bipro.net/
