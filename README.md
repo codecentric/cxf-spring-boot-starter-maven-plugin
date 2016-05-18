@@ -179,7 +179,7 @@ Sometimes, a Service-API-Definition relies on a specific Foldername - e.g. becau
 
 
 
-[cxf-spring-boot-starter]:https://github.com/jonashackt/cxf-spring-boot-starter
+[cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
 [jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
 [stackoverflow:eclipse-m2e-lifecycle]:http://stackoverflow.com/a/26447353/4964553
