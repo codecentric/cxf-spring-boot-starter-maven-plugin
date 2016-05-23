@@ -46,14 +46,14 @@ public class BootCxfMojo extends AbstractMojo {
             logWithPrefix("STEP 2: Generating JAX-B Classfiles for Test purpose.");
             generateJaxbClassFiles(wsdl, "wsimport-test", TEST_GENERATED_SOURCES_TARGET_FOLDER);
 
-            logWithPrefix("STEP 3: Adding the generated Java-Classes to project´s classpath...");
+            logWithPrefix("STEP 3: Adding the generated Test-Java-Classes to project´s classpath...");
             addGeneratedTestClasses2Cp();
 
         } else if(isWsdlLocatedInMainResources(wsdl)) {
             logWithPrefix("STEP 2: Generating JAX-B Classfiles.");
             generateJaxbClassFiles(wsdl, "wsimport", GENERATED_SOURCES_TARGET_FOLDER);
 
-            logWithPrefix("STEP 3: Adding the generated Test-Java-Classes to project´s classpath...");
+            logWithPrefix("STEP 3: Adding the generated Java-Classes to project´s classpath...");
             addGeneratedClasses2Cp();
         }
     }
