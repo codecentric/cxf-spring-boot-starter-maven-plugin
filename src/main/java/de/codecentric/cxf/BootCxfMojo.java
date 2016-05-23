@@ -39,32 +39,28 @@ public class BootCxfMojo extends AbstractMojo {
     private BuildPluginManager pluginManager;
     
     public void execute() throws MojoExecutionException {
-        getLog().info("cxf-spring-boot-starter-maven-plugin will now process your WSDL. Lean back and enjoy :)");
+        File wsdl = findWsdl();
+        logWithPrefix("STEP 1: Found .wsdl-File: " + wsdl.getPath());
 
-        if(isWsdlLocatedInTestResources()) {
-            logWithPrefix("STEP 1: Found .wsdl-File: " + findWsdl().getPath());
+        if(isWsdlLocatedInTestResources(wsdl)) {
             logWithPrefix("STEP 2: Generating JAX-B Classfiles for Test purpose.");
-            generateJaxbClassFiles("wsimport-test", TEST_GENERATED_SOURCES_TARGET_FOLDER);
+            generateJaxbClassFiles(wsdl, "wsimport-test", TEST_GENERATED_SOURCES_TARGET_FOLDER);
 
             logWithPrefix("STEP 3: Adding the generated Java-Classes to project´s classpath...");
             addGeneratedTestClasses2Cp();
 
-        } else if(isWsdlLocatedInMainResources()) {
-            logWithPrefix("STEP 1: Found .wsdl-File: " + findWsdl().getPath());
+        } else if(isWsdlLocatedInMainResources(wsdl)) {
             logWithPrefix("STEP 2: Generating JAX-B Classfiles.");
-            generateJaxbClassFiles("wsimport", GENERATED_SOURCES_TARGET_FOLDER);
+            generateJaxbClassFiles(wsdl, "wsimport", GENERATED_SOURCES_TARGET_FOLDER);
 
-            logWithPrefix("STEP 3: Adding the generated Java-Classes to project´s classpath...");
+            logWithPrefix("STEP 3: Adding the generated Test-Java-Classes to project´s classpath...");
             addGeneratedClasses2Cp();
-        } else {
-            logWithPrefix(WSDL_NOT_FOUND_ERROR_MESSAGE);
         }
-
     }
 
 
 
-    private void generateJaxbClassFiles(String jaxwsMavenPluginGoal, String dir2PutGeneratedClassesIn) throws MojoExecutionException {
+    private void generateJaxbClassFiles(File wsdl, String jaxwsMavenPluginGoal, String dir2PutGeneratedClassesIn) throws MojoExecutionException {
         executeMojo(
                 /*
                  * Generate Java-Classes inkl. JAXB-Bindings from WSDL & imported XSD
@@ -89,14 +85,14 @@ public class BootCxfMojo extends AbstractMojo {
                     /*
                      * See http://www.mojohaus.org/jaxws-maven-plugin/wsimport-mojo.html
                      */
-                    element(name("wsdlDirectory"), wsdlPathWithoutFileName()),
+                    element(name("wsdlDirectory"), wsdlPathWithoutFileName(wsdl)),
                     /*
                      * This is very useful to NOT generate something like
                      * wsdlLocation = "file:/Users/myuser/devfolder/cxf-spring-boot-starter/src/test/resources/wsdl/Weather1.0.wsdl"
                      * into the @WebServiceClient generated Class. This could break stuff, e.g. when u build on Jenkins
                      * and then try to deploy on a Linux server, where the path is completely different
                      */
-                    element(name("wsdlLocation"), "/" + wsdlFileParentFolderName() + "/" + wsdlFileName()),
+                    element(name("wsdlLocation"), "/" + wsdlFileParentFolderName(wsdl) + "/" + wsdlFileName(wsdl)),
                     element(name("sourceDestDir"), dir2PutGeneratedClassesIn),
                     /*
                      * For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570
@@ -107,7 +103,7 @@ public class BootCxfMojo extends AbstractMojo {
                      * the binding.xml in the given directory is found automatically,
                      * because the directory is scanned for '.xml'-Files
                      */
-                    element("bindingDirectory", wsdlPathWithoutFileName()),
+                    element("bindingDirectory", wsdlPathWithoutFileName(wsdl)),
                     /*
                      * Arguments for JAXB2-Generator behind JAX-WS-Frontend
                      */
@@ -129,25 +125,24 @@ public class BootCxfMojo extends AbstractMojo {
     }
 
 
-    private boolean isWsdlLocatedInTestResources() throws MojoExecutionException {
-        return StringUtils.contains(findWsdl().getPath(), "/test/");
+    private boolean isWsdlLocatedInTestResources(File wsdl) throws MojoExecutionException {
+        return StringUtils.contains(wsdl.getPath(), "/test/") || StringUtils.contains(wsdl.getPath(), "\\test\\");
     }
 
-    private boolean isWsdlLocatedInMainResources() throws MojoExecutionException {
-        return StringUtils.contains(findWsdl().getPath(), "/main/");
+    private boolean isWsdlLocatedInMainResources(File wsdl) throws MojoExecutionException {
+        return StringUtils.contains(wsdl.getPath(), "/main/") || StringUtils.contains(wsdl.getPath(), "\\main\\");
     }
 
-    private String wsdlFileName() throws MojoExecutionException {
-        return findWsdl().getName();
+    private String wsdlFileName(File wsdl) throws MojoExecutionException {
+        return wsdl.getName();
     }
 
-    private String wsdlFileParentFolderName() throws MojoExecutionException {
-        return findWsdl().getParentFile().getName();
+    private String wsdlFileParentFolderName(File wsdl) throws MojoExecutionException {
+        return wsdl.getParentFile().getName();
     }
 
-    private String wsdlPathWithoutFileName() throws MojoExecutionException {
-
-        return findWsdl().getParent();
+    private String wsdlPathWithoutFileName(File wsdl) throws MojoExecutionException {
+        return wsdl.getParent();
     }
 
     private File findWsdl() throws MojoExecutionException {
