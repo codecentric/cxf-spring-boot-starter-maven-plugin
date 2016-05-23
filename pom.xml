@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>de.codecentric</groupId>
 	<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.0.7-SNAPSHOT</version>
 	<name>cxf-spring-boot-starter-maven-plugin</name>
 	<description>Maven plugin complementing the Boot starter for SOAP-Webservices with Apache CXF using JAX-WS &amp; JAXB with Annotations only</description>
 	<packaging>maven-plugin</packaging>	
@@ -43,6 +43,14 @@
 	     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
 	   </snapshotRepository>
 	</distributionManagement>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <commons-io.version>2.5</commons-io.version>
+    </properties>
+
 	<dependencies>
 	  <dependency>
 	    <groupId>org.apache.maven</groupId>
@@ -60,11 +68,23 @@
 	  
 	  <!-- To compose all needed JAX-WS-Maven-Plugins for generation of JAX-B-Classes and so on
 	  see: http://stackoverflow.com/questions/526733/maven-plugin-executing-another-plugin -->
-	  <dependency>
-	      <groupId>org.twdata.maven</groupId>
-	      <artifactId>mojo-executor</artifactId>
-	      <version>2.2.0</version>
-	  </dependency>
+	    <dependency>
+            <groupId>org.twdata.maven</groupId>
+            <artifactId>mojo-executor</artifactId>
+            <version>2.2.0</version>
+	    </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
 	</dependencies>
 	
 	<build>

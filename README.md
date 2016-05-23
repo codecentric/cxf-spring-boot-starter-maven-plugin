@@ -120,11 +120,12 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
 * Generating all necessary Java-Classes using JAX-B from your WSDL/XSDs, complementing the [cxf-spring-boot-starter](https://github.com/jonashackt/cxf-spring-boot-starter)
 * This works also for complex imports of many XSD files, that inherit other XSDs themselfs
 * The generated JAX-B Classfiles will be added to your projects classpath - ready to map & transform into whatever you want
+* Scanning your resource-Folder for the WSDL and configuring the jaxws-maven-plugin, so that non-absolute paths will be generated into @WebService and @WebServiceClient-Classes
 
 ### HowTo
 
-* Put your WSDL into /src/main/resources/wsdl/ - and add your XSDs, so they could be imported correct (relatively)
-* If you want to tweak your Namespace-Names, put a binding.xml also into /src/main/resources/wsdl/
+* Put your WSDL into some folder under __/src/main/resources/__ OR __/src/test/resources/__ - and add your XSDs, so they could be imported correct (relatively)
+* If you want to tweak your Namespace-Names, put a binding.xml into the same folder, where your WSDL resides
 * add this plugin to your pom´s build-section:
 
 ```
@@ -133,7 +134,7 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
         <plugin>
             <groupId>de.codecentric</groupId>
             <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-            <version>1.0.6.RELEASE</version>
+            <version>1.0.7.RELEASE</version>
             <executions>
 				<execution>
 					<goals>
@@ -162,21 +163,15 @@ mvn cxf-spring-boot-starter:generate
 * The generated JAX-B Classfiles will be placed in target/generated-sources/wsdlimport 
 
 
-### Set WSDL Directory (optional)
-
-Sometimes, a Service-API-Definition relies on a specific Foldername - e.g. because XSD-Imports inherit these Foldernames (like the [bipro.net]-Services do). If this is the case, you can optionally pass a wsdl-Directory parameter:
-
-```
-<configuration>
-	<wsdldir>src/main/resources/my/custom/wsdl/path</wsdldir>
-</configuration>
-```
-
-
 ### Dones
 
 * made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
+* non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
 
+
+### Todos
+
+* use jaxws:wsimport-test for testrun
 
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
