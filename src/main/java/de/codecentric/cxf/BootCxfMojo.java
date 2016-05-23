@@ -92,7 +92,7 @@ public class BootCxfMojo extends AbstractMojo {
                      * into the @WebServiceClient generated Class. This could break stuff, e.g. when u build on Jenkins
                      * and then try to deploy on a Linux server, where the path is completely different
                      */
-                    element(name("wsdlLocation"), "/" + wsdlFileParentFolderName(wsdl) + "/" + wsdlFileName(wsdl)),
+                    element(name("wsdlLocation"), "/" + wsdlFolderInResources(wsdl) + wsdlFileName(wsdl)),
                     element(name("sourceDestDir"), dir2PutGeneratedClassesIn),
                     /*
                      * For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570
@@ -137,8 +137,20 @@ public class BootCxfMojo extends AbstractMojo {
         return wsdl.getName();
     }
 
-    private String wsdlFileParentFolderName(File wsdl) throws MojoExecutionException {
-        return wsdl.getParentFile().getName();
+    private String wsdlFolderInResources(File wsdl) {
+        String folderAboveResourceDir = wsdlFileParentFolderName(wsdl, "");
+        logWithPrefix("folder above resource-dir: " + folderAboveResourceDir);
+        return folderAboveResourceDir;
+    }
+
+    private String wsdlFileParentFolderName(File wsdl, String folderAboveResourceDir) {
+
+        if(!"resources".equals(wsdl.getParentFile().getName())) {
+            folderAboveResourceDir = wsdl.getParentFile().getName() + "/" + folderAboveResourceDir;
+            return wsdlFileParentFolderName(wsdl.getParentFile(), folderAboveResourceDir);
+        } else {
+            return folderAboveResourceDir;
+        }
     }
 
     private String wsdlPathWithoutFileName(File wsdl) throws MojoExecutionException {
