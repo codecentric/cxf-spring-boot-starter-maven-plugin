@@ -120,7 +120,7 @@ So according to [stackoverflow:maven-plugin-executing-another-plugin](http://sta
 * Generating all necessary Java-Classes using JAX-B from your WSDL/XSDs, complementing the [cxf-spring-boot-starter]
 * This works also for complex imports of many XSD files, that inherit other XSDs themselfs
 * The generated JAX-B Classfiles will be added to your projects classpath - ready to map & transform into whatever you want
-* Scanning your resource-Folder for the WSDL and configuring the jaxws-maven-plugin, so that non-absolute paths will be generated into @WebService and @WebServiceClient-Classes
+* Scanning your resource-Folder for the WSDL and configuring the jaxws-maven-plugin, so that non-absolute paths will be generated into @WebServiceClient-Class
 
 ### HowTo
 
@@ -167,11 +167,12 @@ mvn cxf-spring-boot-starter:generate
 
 * made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
 * non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
-
+* use jaxws:wsimport-test for testrun
 
 ### Todos
 
-* use jaxws:wsimport-test for testrun
+* nothing here atm
+
 
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
