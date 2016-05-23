@@ -126,7 +126,7 @@ public class BootCxfMojo extends AbstractMojo {
 
     private String constructWsdlLocation(File wsdl) throws MojoExecutionException {
         String wsdlLocation = "/" + wsdlFolderInResources(wsdl) + wsdlFileName(wsdl);
-        logWithPrefix("setting wsdlLocation to plugin: " + wsdlLocation);
+        logWithPrefix("setting relative wsdlLocation into @WebServiceClient: " + wsdlLocation);
         return wsdlLocation;
     }
 
