@@ -73,7 +73,7 @@ public class BootCxfMojo extends AbstractMojo {
                 plugin(
                     groupId("org.codehaus.mojo"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.4.1"),
+                    version("2.4.2.RC1"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",
