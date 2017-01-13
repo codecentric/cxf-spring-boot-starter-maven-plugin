@@ -13,6 +13,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -33,7 +35,6 @@ public class BootCxfMojo extends AbstractMojo {
 
     @Parameter( defaultValue = "${session}", readonly = true )
     private MavenSession mavenSession;
-
 
     @Component
     private BuildPluginManager pluginManager;
@@ -56,8 +57,23 @@ public class BootCxfMojo extends AbstractMojo {
             logWithPrefix("STEP 3: Adding the generated Java-Classes to project´s classpath...");
             addGeneratedClasses2Cp();
         }
+
+        logWithPrefix("STEP 4: Injecting packageName into cxf-spring-boot-maven.properties...");
+        filterCxfSpringBootMavenProperties();
     }
 
+    private void filterCxfSpringBootMavenProperties() throws MojoExecutionException {
+
+        try {
+            String outputDirectory = mavenProject.getBuild().getOutputDirectory();
+            File cxfSpringBootMavenProperties = new File(outputDirectory + "/cxf-spring-boot-maven.properties");
+            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, "projekt.package.name=" + mavenProject.getGroupId(), Charset.defaultCharset());
+
+        } catch (IOException ioExc) {
+            throw new MojoExecutionException("Could not filter inject packageName into cxf-spring-boot-maven.properties." +
+                    "Have you set the pom groupId correctly?", ioExc);
+        }
+    }
 
 
     private void generateJaxbClassFiles(File wsdl, String jaxwsMavenPluginGoal, String dir2PutGeneratedClassesIn) throws MojoExecutionException {
