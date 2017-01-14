@@ -57,7 +57,7 @@ public class BootCxfMojoTest {
     @Test public void
     does_write_cxfSpringBootMavenProperties() throws MojoExecutionException, IOException {
 
-        bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "foo.bar", "foo.key");
+        bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "foo.key", "foo.bar");
 
         File cxfSpringBootMavenProperties = findCxfSpringBootMavenPropertiesInClasspath();
         assertThat(cxfSpringBootMavenProperties.getName(), is(equalTo(BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME)));
@@ -85,6 +85,16 @@ public class BootCxfMojoTest {
 
         String content = FileUtils.readFileToString(findCxfSpringBootMavenPropertiesInClasspath(), Charset.defaultCharset());
         assertThat(content, containsString(BootCxfMojo.SEI_IMPLEMENTATION_PACKAGE_NAME_KEY + "=" + seiImplementationPackageName));
+    }
+
+    @Test public void
+    does_not_overwrite_packages_in_cxfSpringBootMavenProperties_file() throws MojoExecutionException, IOException {
+        bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "foo.key", "foo.bar");
+        bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "bar.key", "bar.boar");
+
+        String content = FileUtils.readFileToString(findCxfSpringBootMavenPropertiesInClasspath(), Charset.defaultCharset());
+        assertThat(content, containsString("foo.key" + "=" + "foo.bar"));
+        assertThat(content, containsString("bar.key" + "=" + "bar.boar"));
     }
 
     private File findCxfSpringBootMavenPropertiesInClasspath() throws IOException {

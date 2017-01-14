@@ -280,17 +280,17 @@ public class BootCxfMojo extends AbstractMojo {
     }
 
     protected void writeSeiAndWebServiceClientPackageToCxfSpringBootMavenPropterties(String outputDirectory, String packageName) throws MojoExecutionException {
-        writeCxfSpringBootMavenProperties(outputDirectory, packageName, SEI_AND_WEB_SERVICE_CLIENT_PACKAGE_NAME_KEY);
+        writeCxfSpringBootMavenProperties(outputDirectory, SEI_AND_WEB_SERVICE_CLIENT_PACKAGE_NAME_KEY, packageName);
     }
 
     protected void writeSeiImplementationPackageToCxfSpringBootMavenPropterties(String outputDirectory, String packageName) throws MojoExecutionException {
-        writeCxfSpringBootMavenProperties(outputDirectory, packageName, SEI_IMPLEMENTATION_PACKAGE_NAME_KEY);
+        writeCxfSpringBootMavenProperties(outputDirectory, SEI_IMPLEMENTATION_PACKAGE_NAME_KEY, packageName);
     }
 
-    protected void writeCxfSpringBootMavenProperties(String outputDirectory, String packageName, String propertyKey) throws MojoExecutionException {
+    protected void writeCxfSpringBootMavenProperties(String outputDirectory, String propertyKey, String packageName) throws MojoExecutionException {
         try {
             File cxfSpringBootMavenProperties = new File(outputDirectory + "/" + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME);
-            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, propertyKey + "=" + packageName, Charset.defaultCharset());
+            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, propertyKey + "=" + packageName + "\n", Charset.defaultCharset(), true);
 
         } catch (IOException ioExc) {
             throw new MojoExecutionException("Could not inject packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + "." +
