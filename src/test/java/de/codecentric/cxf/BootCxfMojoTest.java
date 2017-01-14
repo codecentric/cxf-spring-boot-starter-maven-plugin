@@ -65,6 +65,15 @@ public class BootCxfMojoTest {
     }
 
     @Test public void
+    does_clean_cxfSpringBootMavenProperties() throws MojoExecutionException, IOException {
+
+        bootCxfMojo.cleanCxfSpringBootMavenProperties(buildDirectory);
+
+        String content = FileUtils.readFileToString(findCxfSpringBootMavenPropertiesInClasspath(), Charset.defaultCharset());
+        assertThat(content.length(), is(0));
+    }
+
+    @Test public void
     does_write_Sei_And_WebServiceClient_packageName_into_cxfSpringBootMavenProperties_file() throws MojoExecutionException, IOException {
 
         String packageNameGeneratedFromTargetNamespace = "de.codecentric.namespace.weatherservice";

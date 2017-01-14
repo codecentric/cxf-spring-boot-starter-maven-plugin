@@ -50,9 +50,13 @@ public class BootCxfMojo extends AbstractMojo {
     private BuildPluginManager pluginManager;
 
     public void execute() throws MojoExecutionException {
-        File wsdl = findWsdl(mavenProject.getBasedir());
-        logWithPrefix("STEP 1: Found .wsdl-File: " + wsdl.getPath());
 
+        logWithPrefix("STEP 0: Scanning for WSDL file in src/main/resources");
+
+        File wsdl = findWsdl(mavenProject.getBasedir());
+        String buildDirectory = mavenProject.getBuild().getOutputDirectory();
+
+        logWithPrefix("STEP 1: Found .wsdl-File: " + wsdl.getPath());
         if(isWsdlLocatedInTestResources(wsdl)) {
             logWithPrefix("STEP 2: Generating JAX-B Classfiles for Test purpose.");
             generateJaxbClassFiles(wsdl, "wsimport-test", TEST_GENERATED_SOURCES_TARGET_FOLDER);
@@ -69,9 +73,10 @@ public class BootCxfMojo extends AbstractMojo {
         }
 
         logWithPrefix("STEP 4: Injecting Implementation packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + " for later Autodetection of Endpoints...");
-        String buildDirectory = mavenProject.getBuild().getOutputDirectory();
-        String packageName = mavenProject.getGroupId();
-        writeSeiImplementationPackageToCxfSpringBootMavenPropterties(buildDirectory, packageName);
+        // The first writer to cxf-spring-boot-maven.properties should clean the file of old entries
+        // Otherwise just appending would lead to bogus properties
+        cleanCxfSpringBootMavenProperties(buildDirectory);
+        writeSeiImplementationPackageToCxfSpringBootMavenPropterties(buildDirectory, mavenProject.getGroupId());
 
         logWithPrefix("STEP 5: Extracting targetNamespace from WSDL, generating packageName from it with com.sun.tools.xjc.api.XJC (see wsgen, WSImportTool and WSDLModeler at line 2312 of the JAXWSRI) and injecting it into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + " for later Autodetection of Endpoints...");
         String targetNamespaceFromWsdl = readTargetNamespaceFromWsdl(wsdl);
@@ -295,6 +300,16 @@ public class BootCxfMojo extends AbstractMojo {
         } catch (IOException ioExc) {
             throw new MojoExecutionException("Could not inject packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + "." +
                     "Have you set the pom groupId correctly?", ioExc);
+        }
+    }
+
+    public void cleanCxfSpringBootMavenProperties(String outputDirectory) throws MojoExecutionException {
+        try {
+            File cxfSpringBootMavenProperties = new File(outputDirectory + "/" + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME);
+            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, "", Charset.defaultCharset());
+
+        } catch (IOException ioExc) {
+            throw new MojoExecutionException("Could not clean " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME, ioExc);
         }
     }
 }
