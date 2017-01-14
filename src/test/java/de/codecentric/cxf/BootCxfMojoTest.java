@@ -31,11 +31,11 @@ public class BootCxfMojoTest {
         assertThat(cxfSpringBootMavenProperties.getName(), is(equalTo(BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME)));
 
         String content = FileUtils.readFileToString(cxfSpringBootMavenProperties, Charset.defaultCharset());
-        assertThat(content, is(equalTo("projekt.package.name=de.codecentric.soap")));
+        assertThat(content, is(equalTo(BootCxfMojo.PACKAGE_NAME_KEY + "=" + packageName)));
     }
 
     private File findCxfSpringBootMavenPropertiesInClasspath() throws IOException {
-        return findInClasspath("classpath*:**/cxf-spring-boot-maven.properties").getFile();
+        return findInClasspath("classpath*:**/" + BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME).getFile();
     }
 
     private Resource findInClasspath(String pattern) throws IOException {

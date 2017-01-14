@@ -29,6 +29,7 @@ public class BootCxfMojo extends AbstractMojo {
     private static final String WSDL_NOT_FOUND_ERROR_MESSAGE = ".wsdl-File not found - is it placed somewhere under /src/main/resources or /src/test/resources?";
     private static final String LOG_PREFIX = "CXF-BOOT-MAVEN-PLUGIN ";
     public static final String CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME = "cxf-spring-boot-maven.properties";
+    public static final String PACKAGE_NAME_KEY = "projekt.package.name";
 
 
     @Parameter( defaultValue = "${project}", readonly = true )
@@ -68,7 +69,7 @@ public class BootCxfMojo extends AbstractMojo {
     protected void writeCxfSpringBootMavenProperties(String outputDirectory, String packagaName) throws MojoExecutionException {
         try {
             File cxfSpringBootMavenProperties = new File(outputDirectory + "/" + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME);
-            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, "projekt.package.name=" + packagaName, Charset.defaultCharset());
+            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, PACKAGE_NAME_KEY + "=" + packagaName, Charset.defaultCharset());
 
         } catch (IOException ioExc) {
             throw new MojoExecutionException("Could not filter inject packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + "." +
