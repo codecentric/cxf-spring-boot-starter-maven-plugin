@@ -28,8 +28,9 @@ public class BootCxfMojo extends AbstractMojo {
     
     private static final String WSDL_NOT_FOUND_ERROR_MESSAGE = ".wsdl-File not found - is it placed somewhere under /src/main/resources or /src/test/resources?";
     private static final String LOG_PREFIX = "CXF-BOOT-MAVEN-PLUGIN ";
+    public static final String CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME = "cxf-spring-boot-maven.properties";
 
-    
+
     @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject mavenProject;
 
@@ -38,7 +39,7 @@ public class BootCxfMojo extends AbstractMojo {
 
     @Component
     private BuildPluginManager pluginManager;
-    
+
     public void execute() throws MojoExecutionException {
         File wsdl = findWsdl();
         logWithPrefix("STEP 1: Found .wsdl-File: " + wsdl.getPath());
@@ -58,19 +59,19 @@ public class BootCxfMojo extends AbstractMojo {
             addGeneratedClasses2Cp();
         }
 
-        logWithPrefix("STEP 4: Injecting packageName into cxf-spring-boot-maven.properties...");
-        filterCxfSpringBootMavenProperties();
+        logWithPrefix("STEP 4: Injecting packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + "...");
+        String buildDirectory = mavenProject.getBuild().getOutputDirectory();
+        String packageName = mavenProject.getGroupId();
+        writeCxfSpringBootMavenProperties(buildDirectory, packageName);
     }
 
-    private void filterCxfSpringBootMavenProperties() throws MojoExecutionException {
-
+    protected void writeCxfSpringBootMavenProperties(String outputDirectory, String packagaName) throws MojoExecutionException {
         try {
-            String outputDirectory = mavenProject.getBuild().getOutputDirectory();
-            File cxfSpringBootMavenProperties = new File(outputDirectory + "/cxf-spring-boot-maven.properties");
-            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, "projekt.package.name=" + mavenProject.getGroupId(), Charset.defaultCharset());
+            File cxfSpringBootMavenProperties = new File(outputDirectory + "/" + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME);
+            FileUtils.writeStringToFile(cxfSpringBootMavenProperties, "projekt.package.name=" + packagaName, Charset.defaultCharset());
 
         } catch (IOException ioExc) {
-            throw new MojoExecutionException("Could not filter inject packageName into cxf-spring-boot-maven.properties." +
+            throw new MojoExecutionException("Could not filter inject packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + "." +
                     "Have you set the pom groupId correctly?", ioExc);
         }
     }
