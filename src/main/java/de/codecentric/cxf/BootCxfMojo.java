@@ -72,7 +72,7 @@ public class BootCxfMojo extends AbstractMojo {
             addGeneratedClasses2Cp();
         }
 
-        logWithPrefix("STEP 4: Injecting Implementation packageName into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + " for later Autodetection of Endpoints...");
+        logWithPrefix("STEP 4: Guessing SEI implementation´s package name & injecting it into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + " for later Autodetection of Endpoints...");
         // The first writer to cxf-spring-boot-maven.properties should clean the file of old entries
         // Otherwise just appending would lead to bogus properties
         cleanCxfSpringBootMavenProperties(buildDirectory);
