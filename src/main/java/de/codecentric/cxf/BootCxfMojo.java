@@ -122,7 +122,7 @@ public class BootCxfMojo extends AbstractMojo {
                      * For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570
                      */
                     element("vmArgs",
-                            element("vmArg", "-Djavax.xml.accessExternalSchema=all")),
+                            element("vmArg", "-Djavax.xml.accessExternalSchema=all -Djavax.xml.accessExternalDTD=all")),
                     /*
                      * the binding.xml in the given directory is found automatically,
                      * because the directory is scanned for '.xml'-Files
