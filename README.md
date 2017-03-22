@@ -27,7 +27,7 @@ While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves
         <plugin>
             <groupId>de.codecentric</groupId>
             <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-            <version>1.0.8.RELEASE</version>
+            <version>1.1.1.RELEASE</version>
             <executions>
 				<execution>
 					<goals>
@@ -61,10 +61,6 @@ mvn cxf-spring-boot-starter:generate
 * made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
 * non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
 * use jaxws:wsimport-test for testrun
-
-### Todos
-
-* nothing here atm
 
 
 
