@@ -35,8 +35,8 @@ public class BootCxfMojo extends AbstractMojo {
     public static final String SEI_IMPLEMENTATION_PACKAGE_NAME_KEY = "sei.implementation.package.name";
     public static final String SEI_AND_WEB_SERVICE_CLIENT_PACKAGE_NAME_KEY = "sei.and.webserviceclient.package.name";
 
-    // (?<=targetNamespace=")[:./a-zA-Z]+(?=")
-    private static final String REGEX_FIND_TARGET_NAMESPACE_CONTENT = "(?<=targetNamespace=\")[:./a-zA-Z]+(?=\")";
+    // (?<=targetNamespace=")[:./a-zA-Z0-9]+(?=")
+    private static final String REGEX_FIND_TARGET_NAMESPACE_CONTENT = "(?<=targetNamespace=\")[:./a-zA-Z0-9]+(?=\")";
     private static final String TARGET_NAMESPACE_COULDNT_BE_EXTRACTED = "targetNamespace could not be extracted from WSDL file.";
 
 
@@ -79,7 +79,7 @@ public class BootCxfMojo extends AbstractMojo {
         writeSeiImplementationPackageToCxfSpringBootMavenPropterties(buildDirectory, mavenProject.getGroupId());
 
         logWithPrefix("STEP 5: Extracting targetNamespace from WSDL, generating packageName from it with com.sun.tools.xjc.api.XJC (see wsgen, WSImportTool and WSDLModeler at line 2312 of the JAXWSRI) and injecting it into " + CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME + " for later Autodetection of Endpoints...");
-        String targetNamespaceFromWsdl = readTargetNamespaceFromWsdl(wsdl);
+        String targetNamespaceFromWsdl = readTargetNamespaceFromWsdl(readWsdlIntoString(wsdl));
         String seiImplementationBasePackageName = generatePackageNameFromTargetNamespaceInWsdl(targetNamespaceFromWsdl);
         writeSeiAndWebServiceClientPackageToCxfSpringBootMavenPropterties(buildDirectory, seiImplementationBasePackageName);
     }
@@ -249,23 +249,23 @@ public class BootCxfMojo extends AbstractMojo {
         getLog().info(LOG_PREFIX + logMessage);
     }
 
-    protected String readTargetNamespaceFromWsdl(File wsdl) throws MojoExecutionException {
+    protected String readTargetNamespaceFromWsdl(String wsdl) throws MojoExecutionException {
 
-        try {
-            Matcher matcher = buildMatcher(readWsdlIntoString(wsdl), REGEX_FIND_TARGET_NAMESPACE_CONTENT);
+        Matcher matcher = buildMatcher(wsdl, REGEX_FIND_TARGET_NAMESPACE_CONTENT);
 
-            if (matcher.find()) {
-                return matcher.group(0);
-            } else {
-                throw new MojoExecutionException(TARGET_NAMESPACE_COULDNT_BE_EXTRACTED);
-            }
-        } catch (IOException ioExc) {
-            throw new MojoExecutionException(TARGET_NAMESPACE_COULDNT_BE_EXTRACTED, ioExc);
+        if (matcher.find()) {
+            return matcher.group(0);
+        } else {
+            throw new MojoExecutionException(TARGET_NAMESPACE_COULDNT_BE_EXTRACTED);
         }
     }
 
-    private String readWsdlIntoString(File wsdl) throws IOException, MojoExecutionException {
-        return FileUtils.readFileToString(wsdl, Charset.defaultCharset());
+    protected static String readWsdlIntoString(File wsdl) throws MojoExecutionException {
+        try {
+            return FileUtils.readFileToString(wsdl, Charset.defaultCharset());
+        } catch (IOException ioEx) {
+            throw new MojoExecutionException("Problems in transforming WSDL File to String.", ioEx);
+        }
     }
 
     private static Matcher buildMatcher(String string2SearchIn, String regex) {

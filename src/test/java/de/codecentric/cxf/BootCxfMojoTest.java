@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static de.codecentric.cxf.BootCxfMojo.readWsdlIntoString;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -39,19 +40,34 @@ public class BootCxfMojoTest {
     read_target_namespace_from_Wsdl() throws MojoExecutionException {
 
         File wsdl = bootCxfMojo.findWsdl(resourcesDirectory);
-        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
+        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(readWsdlIntoString(wsdl));
 
         assertThat(targetNamespace, is(equalTo("http://www.codecentric.de/namespace/weatherservice/")));
     }
 
     @Test public void
-    extract_correct_package_name_from_target_naemspace_in_Wsdl() throws MojoExecutionException {
+    extract_correct_package_name_from_target_namespace_in_Wsdl() throws MojoExecutionException {
 
         File wsdl = bootCxfMojo.findWsdl(resourcesDirectory);
-        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
+        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(readWsdlIntoString(wsdl));
         String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
 
         assertThat(packageName, is(equalTo("de.codecentric.namespace.weatherservice")));
+    }
+
+    @Test public void
+    extract_correct_package_name_from_target_namespace_containing_numbers_in_Wsdl() throws MojoExecutionException {
+
+        String wsdl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<wsdl:definitions xmlns:s=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                "\t\t\t\t  xmlns:soap12=\"http://schemas.xmlsoap.org/wsdl/soap12/\"\n" +
+                "\t\t\t\t  targetNamespace=\"http://www.abc.ch/namespase/filsearch/v5\"\n" +
+                "\t\t\t\t  xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">\n" +
+                "</wsdl:definitions>";
+        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
+        String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
+
+        assertThat(packageName, is(equalTo("ch.abc.namespase.filsearch.v5")));
     }
 
     @Test public void
