@@ -36,7 +36,7 @@ public class BootCxfMojo extends AbstractMojo {
     public static final String SEI_AND_WEB_SERVICE_CLIENT_PACKAGE_NAME_KEY = "sei.and.webserviceclient.package.name";
 
     // (?<=targetNamespace=")[:./a-zA-Z0-9]+(?=")
-    private static final String REGEX_FIND_TARGET_NAMESPACE_CONTENT = "(?<=targetNamespace=\")[:./a-zA-Z0-9]+(?=\")";
+    private static final String REGEX_FIND_TARGET_NAMESPACE_CONTENT = "(?<=targetNamespace=\")[:./a-zA-Z0-9-]+(?=\")";
     private static final String TARGET_NAMESPACE_COULDNT_BE_EXTRACTED = "targetNamespace could not be extracted from WSDL file.";
 
 
