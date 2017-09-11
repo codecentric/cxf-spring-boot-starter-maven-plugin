@@ -51,7 +51,7 @@
         <commons-io.version>2.5</commons-io.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<spring.version>4.3.9.RELEASE</spring.version>
-		<jaxb.version>2.2.11</jaxb.version>
+		<jaxb.version>2.3.0</jaxb.version>
     </properties>
 
 	<dependencies>
