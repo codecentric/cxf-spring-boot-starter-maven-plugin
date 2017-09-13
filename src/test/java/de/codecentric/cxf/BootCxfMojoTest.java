@@ -86,6 +86,21 @@ public class BootCxfMojoTest {
     }
 
     @Test public void
+    extract_correct_package_name_from_target_namespace_containing_underscores_in_Wsdl() throws MojoExecutionException {
+
+        String wsdl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<wsdl:definitions xmlns:s=\"http://www.w3.org/2001/XMLSchema\"\n" +
+                "\t\t\t\t  xmlns:soap12=\"http://schemas.xmlsoap.org/wsdl/soap12/\"\n" +
+                "\t\t\t\t  targetNamespace=\"http://webservice_v26.tag.crm.comarch.com\"\n" +
+                "\t\t\t\t  xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">\n" +
+                "</wsdl:definitions>";
+        String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
+        String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
+
+        assertThat(packageName, is(equalTo("com.comarch.crm.tag.webservice_v26")));
+    }
+
+    @Test public void
     does_write_cxfSpringBootMavenProperties() throws MojoExecutionException, IOException {
 
         bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "foo.key", "foo.bar");
