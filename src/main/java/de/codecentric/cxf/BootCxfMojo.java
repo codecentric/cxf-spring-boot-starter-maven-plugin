@@ -97,12 +97,12 @@ public class BootCxfMojo extends AbstractMojo {
                 plugin(
                     groupId("org.codehaus.mojo"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.4.1"),
+                    version("2.5.0"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",
                                     "jaxb2-namespace-prefix",
-                                    "1.1"))
+                                    "1.3"))
                 ),
                 goal(jaxwsMavenPluginGoal),
                 configuration(
@@ -207,7 +207,7 @@ public class BootCxfMojo extends AbstractMojo {
                 plugin(
                         groupId("org.codehaus.mojo"),
                         artifactId("build-helper-maven-plugin"),
-                        version("1.10")
+                        version("3.0.0")
                 ),
                 goal("add-source"),
                 configuration(
@@ -230,7 +230,7 @@ public class BootCxfMojo extends AbstractMojo {
                 plugin(
                         groupId("org.codehaus.mojo"),
                         artifactId("build-helper-maven-plugin"),
-                        version("1.10")
+                        version("3.0.0")
                 ),
                 goal("add-test-source"),
                 configuration(
