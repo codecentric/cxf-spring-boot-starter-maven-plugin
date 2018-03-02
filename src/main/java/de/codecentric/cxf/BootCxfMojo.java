@@ -190,6 +190,11 @@ public class BootCxfMojo extends AbstractMojo {
         String[] extension = {"wsdl"};
         Collection<File> wsdls = FileUtils.listFiles(buildDirectory, extension, true);
 
+        if(mavenProject != null) {
+            String targetDirectory = mavenProject.getBuild().getOutputDirectory().replaceAll("classes$", "");
+            wsdls.removeIf(f -> f.getAbsolutePath().startsWith(targetDirectory));
+        }
+
         Optional<File> wsdl = wsdls.stream().findFirst();
 
         if(wsdl.isPresent()) {
