@@ -190,10 +190,7 @@ public class BootCxfMojo extends AbstractMojo {
         String[] extension = {"wsdl"};
         Collection<File> wsdls = FileUtils.listFiles(buildDirectory, extension, true);
 
-        if(mavenProject != null) {
-            String targetDirectory = mavenProject.getBuild().getOutputDirectory().replaceAll("classes$", "");
-            wsdls.removeIf(f -> f.getAbsolutePath().startsWith(targetDirectory));
-        }
+        filterOutWsdlsInsideBuildOutputFolder(wsdls);
 
         Optional<File> wsdl = wsdls.stream().findFirst();
 
@@ -201,6 +198,13 @@ public class BootCxfMojo extends AbstractMojo {
             return wsdl.get();
         } else {
             throw new MojoExecutionException(WSDL_NOT_FOUND_ERROR_MESSAGE);
+        }
+    }
+
+    private void filterOutWsdlsInsideBuildOutputFolder(Collection<File> wsdls) {
+        if(mavenProject != null) {
+            String targetDirectory = mavenProject.getBuild().getOutputDirectory().replaceAll("classes$", "");
+            wsdls.removeIf(f -> f.getAbsolutePath().startsWith(targetDirectory));
         }
     }
 
