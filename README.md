@@ -30,7 +30,7 @@ While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves
         <plugin>
             <groupId>de.codecentric</groupId>
             <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-            <version>2.0.0.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
             <executions>
                 <execution>
                     <goals>
