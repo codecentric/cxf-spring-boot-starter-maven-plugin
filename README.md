@@ -3,6 +3,10 @@ cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 [![Build Status](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin.svg?branch=master)](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![versionspring](https://img.shields.io/badge/jaxb-2.3.0.1-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
+[![versionspring](https://img.shields.io/badge/jaxb_xjc-2.3.2-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
+[![versionspring](https://img.shields.io/badge/spring-5.1.7_RELEASE-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
+
 
 While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves as a Maven dependency, something that will be executed in the build-section is not delivered in such a way. But the generation of JAX-B Classfiles is a good candidate to run inside the build-process - so the resulting files aren´t checked into source control system. The configuration e.g. of the [jaxws-maven-plugin] is rather complex to work properly and one has to do some research, till all necessary configuration parameters are set properly ([something like this](https://github.com/jonashackt/soap-spring-boot-cxf/blob/master/pom.xml) has to be done - just have a look into the build section of the pom).
 
@@ -53,6 +57,32 @@ mvn cxf-spring-boot-starter:generate
 ```
 
 * The generated JAX-B Classfiles will be placed in target/generated-sources/wsdlimport 
+
+
+### Moved from "OLD" jaxb to "NEW" jaxb
+
+As you might noticed there is a lot going on in the Community effort to move JavaEE to JakartaEE from Oracle to Eclipse Foundation. 
+
+One of the impacts for this project was that the JAX-B GitHub repo [github.com/javaee/jaxb-v2](https://github.com/javaee/jaxb-v2) was archived and a new GitHub repo [github.com/eclipse-ee4j/jaxb-ri](https://github.com/eclipse-ee4j/jaxb-ri) has been created.
+
+Therefore we also moved to the new dependencies inside our [pom.xml](pom.xml) - instead of using [the "OLD JAXB" with the `com.sun.xml.bind` Maven groupId](https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-xjc), we now use the ["NEW JAXB" with the `org.glassfish.jaxb` Maven groupId](https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-xjc):
+
+```
+		<!-- Generate package Name of SEI and WebServiceClient for later
+		Autodetection of Endpoints in cxf-spring-boot-starter -->
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-xjc</artifactId>
+			<version>${jaxb-xjc.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>
+```
+
 
 
 ### Dones
