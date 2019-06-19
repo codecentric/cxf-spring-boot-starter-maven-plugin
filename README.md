@@ -92,6 +92,315 @@ Therefore we also moved to the new dependencies inside our [pom.xml](pom.xml) - 
 * use jaxws:wsimport-test for testrun
 
 
+### Integration testing the plugin
+
+We want to avoid as many problems as possible, so we should also do integration tests for this plugin. 
+
+The [docs about testing Maven plugins](https://maven.apache.org/plugin-developers/plugin-testing.html) under the headline `Integration/Functional testing` advice us to use the [org.apache.maven.shared.maven-verifier](https://mvnrepository.com/artifact/org.apache.maven.shared/maven-verifier) plugin (__NOT the standard__ [maven-verifier-plugin](https://maven.apache.org/plugins/maven-verifier-plugin/)!!!), mind the groupId):
+
+```
+<dependency>
+    <groupId>org.apache.maven.shared</groupId>
+    <artifactId>maven-verifier</artifactId>
+    <version>1.6</version>
+    <scope>test</scope>
+</dependency>
+```
+
+With this dependency we're able to use test the plugin from within JUnit powered Testcases like [CxfSpringBootStarterMavenPluginIntegrationTest.class](cxf-spring-boot-starter-maven-plugin-integrationtest/src/test/java/de/codecentric/cxf/CxfSpringBootStarterMavenPluginIntegrationTest.java):
+
+```java
+import org.apache.maven.it.VerificationException;
+import org.apache.maven.it.Verifier;
+import org.apache.maven.it.util.ResourceExtractor;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+public class CxfSpringBootStarterMavenPluginIntegrationTest {
+
+    @Test
+    public void testJaxBandJaxWsClassfilesGenerationInclPluginProperties() throws IOException, VerificationException {
+
+        // Given
+        File generationTestProjectDir = ResourceExtractor.simpleExtractResources( getClass(), "/generation-test-project" );
+        Verifier verifier = new Verifier( generationTestProjectDir.getAbsolutePath() );
+
+        // When
+        verifier.executeGoal( "generate-sources" );
+
+        // Then
+        verifier.verifyErrorFreeLog();
+    }
+
+}
+```
+
+For more code examples on how to use the Verifier API, see [this blog post](https://blog.akquinet.de/2011/02/21/testing-maven-plugins-with-the-verifier-approach/). 
+
+As you may notice, we need a example project `generation-test-project` with a working [pom.xml](cxf-spring-boot-starter-maven-plugin-integrationtest/src/test/resources/generation-test-project/pom.xml) inside `src/test/resources/generation-test-project`:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.codecentric.soap</groupId>
+    <artifactId>generation-test-project</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <description>Project solely for integrationtesting the cxf-spring-boot-starter-maven-plugin</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>de.codecentric</groupId>
+                <artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
+                <version>2.1.6-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+```
+
+And we need to introduce a parent pom to the project - because before actually running the integration test with `org.apache.maven.shared.maven-verifier` we need to execute the full Maven lifecycle incl. `mvn install` for the standard `cxf-spring-boot-starter-maven-plugin` project. Otherwise we wouldn't have something to integration test - and the second Maven module build would fail!
+
+The parent [pom.xml](pom.xml) therefore has a `modules` section:
+
+```
+	<modules>
+		<module>cxf-spring-boot-starter-maven-plugin</module>
+		<module>cxf-spring-boot-starter-maven-plugin-integrationtest</module>
+	</modules>
+```
+
+Because we want to release this plugin to Maven central, all configuration needed there has also been placed into the parent pom.xml, which makes the plugin's pom.xml much more readable, since it only contains the configuration and dependencies really needed.
+
+##### Handling the ArtifactResolutionException: Could not find artifact de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT error
+
+There is one problem with the [org.apache.maven.shared.maven-verifier plugin](https://mvnrepository.com/artifact/org.apache.maven.shared/maven-verifier. When I first used the plugin, I got this error
+
+```
+[INFO] ------------< de.codecentric.soap:generation-test-project >-------------
+[INFO] Building generation-test-project 1.0.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The POM for de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT is missing, no dependency information available
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.193 s
+[INFO] Finished at: 2019-06-19T15:19:36+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Plugin de.codecentric:cxf-spring-boot-starter-maven-plugin:2.1.6-SNAPSHOT or one of its dependencies could not be resolved: Could not find artifact de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT -> [Help 1]
+org.apache.maven.plugin.PluginResolutionException: Plugin de.codecentric:cxf-spring-boot-starter-maven-plugin:2.1.6-SNAPSHOT or one of its dependencies could not be resolved: Could not find artifact de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:128)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:182)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getMojoDescriptor (DefaultMavenPluginManager.java:286)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.getMojoDescriptor (DefaultBuildPluginManager.java:244)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleMappingDelegate.calculateLifecycleMappings (DefaultLifecycleMappingDelegate.java:116)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateLifecycleMappings (DefaultLifecycleExecutionPlanCalculator.java:265)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateMojoExecutions (DefaultLifecycleExecutionPlanCalculator.java:217)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:126)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:144)
+    at org.apache.maven.lifecycle.internal.builder.BuilderCommon.resolveBuildPlan (BuilderCommon.java:97)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:111)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:81)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:56)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:128)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:305)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:192)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:105)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:956)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:288)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:192)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 (Native Method)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke (NativeMethodAccessorImpl.java:62)
+    at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke (DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke (Method.java:567)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:282)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:225)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:406)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:347)
+Caused by: org.eclipse.aether.resolution.ArtifactResolutionException: Could not find artifact de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolve (DefaultArtifactResolver.java:423)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifacts (DefaultArtifactResolver.java:225)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifact (DefaultArtifactResolver.java:202)
+    at org.eclipse.aether.internal.impl.DefaultRepositorySystem.resolveArtifact (DefaultRepositorySystem.java:257)
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:124)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:182)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getMojoDescriptor (DefaultMavenPluginManager.java:286)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.getMojoDescriptor (DefaultBuildPluginManager.java:244)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleMappingDelegate.calculateLifecycleMappings (DefaultLifecycleMappingDelegate.java:116)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateLifecycleMappings (DefaultLifecycleExecutionPlanCalculator.java:265)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateMojoExecutions (DefaultLifecycleExecutionPlanCalculator.java:217)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:126)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:144)
+    at org.apache.maven.lifecycle.internal.builder.BuilderCommon.resolveBuildPlan (BuilderCommon.java:97)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:111)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:81)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:56)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:128)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:305)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:192)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:105)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:956)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:288)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:192)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 (Native Method)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke (NativeMethodAccessorImpl.java:62)
+    at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke (DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke (Method.java:567)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:282)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:225)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:406)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:347)
+Caused by: org.eclipse.aether.transfer.ArtifactNotFoundException: Could not find artifact de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolve (DefaultArtifactResolver.java:413)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifacts (DefaultArtifactResolver.java:225)
+    at org.eclipse.aether.internal.impl.DefaultArtifactResolver.resolveArtifact (DefaultArtifactResolver.java:202)
+    at org.eclipse.aether.internal.impl.DefaultRepositorySystem.resolveArtifact (DefaultRepositorySystem.java:257)
+    at org.apache.maven.plugin.internal.DefaultPluginDependenciesResolver.resolve (DefaultPluginDependenciesResolver.java:124)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getPluginDescriptor (DefaultMavenPluginManager.java:182)
+    at org.apache.maven.plugin.internal.DefaultMavenPluginManager.getMojoDescriptor (DefaultMavenPluginManager.java:286)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.getMojoDescriptor (DefaultBuildPluginManager.java:244)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleMappingDelegate.calculateLifecycleMappings (DefaultLifecycleMappingDelegate.java:116)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateLifecycleMappings (DefaultLifecycleExecutionPlanCalculator.java:265)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateMojoExecutions (DefaultLifecycleExecutionPlanCalculator.java:217)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:126)
+    at org.apache.maven.lifecycle.internal.DefaultLifecycleExecutionPlanCalculator.calculateExecutionPlan (DefaultLifecycleExecutionPlanCalculator.java:144)
+    at org.apache.maven.lifecycle.internal.builder.BuilderCommon.resolveBuildPlan (BuilderCommon.java:97)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:111)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:81)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:56)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:128)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:305)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:192)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:105)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:956)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:288)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:192)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0 (Native Method)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke (NativeMethodAccessorImpl.java:62)
+    at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke (DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke (Method.java:567)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:282)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:225)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:406)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:347)
+[ERROR]
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
+
+	at org.apache.maven.it.Verifier.executeGoals(Verifier.java:1369)
+	at org.apache.maven.it.Verifier.executeGoal(Verifier.java:1254)
+	at org.apache.maven.it.Verifier.executeGoal(Verifier.java:1248)
+	at de.codecentric.cxf.CxfSpringBootStarterMavenPluginIntegrationTest.testJaxBandJaxWsClassfilesGenerationInclPluginProperties(CxfSpringBootStarterMavenPluginIntegrationTest.java:21)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+
+
+Results :
+
+Tests in error:
+  testJaxBandJaxWsClassfilesGenerationInclPluginProperties(de.codecentric.cxf.CxfSpringBootStarterMavenPluginIntegrationTest): Exit code was non-zero: 1; command line and log = (..)
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for cxf-spring-boot-starter-maven-plugin-reactor 2.1.6-SNAPSHOT:
+[INFO]
+[INFO] cxf-spring-boot-starter-maven-plugin-reactor ....... SUCCESS [  0.589 s]
+[INFO] cxf-spring-boot-starter-maven-plugin ............... SUCCESS [  4.294 s]
+[INFO] cxf-spring-boot-starter-maven-plugin-integrationtest FAILURE [  2.959 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.017 s
+[INFO] Finished at: 2019-06-19T15:19:36+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project cxf-spring-boot-starter-maven-plugin-integrationtest: There are test failures.
+```
+
+After some hours of digging into the problem, I finally went to the source code of the [Verifier.java](https://github.com/apache/maven-verifier/blob/master/src/main/java/org/apache/maven/shared/verifier/Verifier.java#L195):
+
+```
+    private void findDefaultMavenHome()
+        throws VerificationException
+    {
+        defaultClasspath = System.getProperty( "maven.bootclasspath" );
+        defaultClassworldConf = System.getProperty( "classworlds.conf" );
+        defaultMavenHome = System.getProperty( "maven.home" );
+
+        if ( defaultMavenHome == null )
+        {
+            Properties envVars = CommandLineUtils.getSystemEnvVars();
+            defaultMavenHome = envVars.getProperty( "M2_HOME" );
+        }
+
+        if ( defaultMavenHome == null )
+        {
+            File f = new File( System.getProperty( "user.home" ), "m2" );
+            if ( new File( f, "bin/mvn" ).isFile() )
+            {
+                defaultMavenHome = f.getAbsolutePath();
+            }
+        }
+}
+```
+
+And there we are - if we havent set either `M2_HOME` or `maven.home`, the Verifier will place an ugly `${user.home)/m2` directory inside the `cxf-spring-boot-starter-maven-plugin-integrationtest` project folder and tries to download our pre-build `de.codecentric:cxf-spring-boot-starter-maven-plugin:jar:2.1.6-SNAPSHOT`, which isn't available on Maven central - since this was only build into our local Maven repository located under `$HOME/.m2/repository`.
+
+Finally the `README` of the [Maven plugin integration testing source](https://github.com/apache/maven-integration-testing) gave me the hint - we simply use a CLI parameter to set the correct Maven repository location:
+
+```
+mvn clean install -Dmaven.repo.local=$HOME/.m2/repository
+```
+
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
 [jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
