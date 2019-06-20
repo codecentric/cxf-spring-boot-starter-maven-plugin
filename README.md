@@ -412,6 +412,21 @@ Looking into the the [Verifier source at line 137](https://github.com/apache/mav
 Now the tests should work also inside our IDEs and without setting the `-D` parameter.
 
 
+##### Where's the log file?
+
+We configure the `Verifier` to name the log file like this:
+
+```
+verifier.setLogFileName("verifier-output.log");
+```
+
+But where can I find this file? Have a look into `target/test-classes/yourTestProjectName`. In this plugin's case, the file is located in:
+
+```
+cxf-spring-boot-starter-maven-plugin/cxf-spring-boot-starter-maven-plugin-integrationtest/target/test-classes/generation-test-project/verifier-output.log
+```
+
+
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
 [jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
