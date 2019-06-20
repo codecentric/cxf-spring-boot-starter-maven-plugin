@@ -401,6 +401,16 @@ Finally the `README` of the [Maven plugin integration testing source](https://gi
 mvn clean install -Dmaven.repo.local=$HOME/.m2/repository
 ```
 
+__BUT:__ this means, we need to set this `-D` parameter every time we want to run our integration tests, which is quite nasty. Isn't there a way we could set this programmatically, since our tests aren't executable inside our IDEs otherwise. 
+
+Looking into the the [Verifier source at line 137](https://github.com/apache/maven-verifier/blob/master/src/main/java/org/apache/maven/shared/verifier/Verifier.java#L137) we find out, that there are other constructors - e.g. one with a `settingsFile` parameter, where we can inject the current systems configuration (which mainly also inherits the maven repo path). So we initialize the `Verifier` with:
+
+```
+        verifier = new Verifier( generationTestProjectDir.getAbsolutePath(), "$HOME/.m2/settings.xml");
+```
+
+Now the tests should work also inside our IDEs and without setting the `-D` parameter.
+
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
 [jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
