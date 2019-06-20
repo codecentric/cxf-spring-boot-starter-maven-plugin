@@ -3,9 +3,10 @@ cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 [![Build Status](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin.svg?branch=master)](https://travis-ci.org/codecentric/cxf-spring-boot-starter-maven-plugin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/cxf-spring-boot-starter-maven-plugin/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![versionspring](https://img.shields.io/badge/jaxb-2.3.0.1-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
-[![versionspring](https://img.shields.io/badge/jaxb_xjc-2.3.2-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
-[![versionspring](https://img.shields.io/badge/spring-5.1.7_RELEASE-brightgreen.svg)](https://github.com/spring-projects/spring-boot)
+[![versionjaxb](https://img.shields.io/badge/org.glassfish.jaxb-2.3.2-brightgreen.svg)](github.com/eclipse-ee4j/jaxb-ri)
+[![versionjaxws](https://img.shields.io/badge/com.sun.xml.ws.jaxws-2.3.2-brightgreen.svg)](https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-rt)
+[![versionjava](https://img.shields.io/badge/jdk-8,_9,_11-brightgreen.svg?logo=java)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![versionspring](https://img.shields.io/badge/spring-5.1.7_RELEASE-brightgreen.svg)](https://spring.io/)
 
 
 While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves as a Maven dependency, something that will be executed in the build-section is not delivered in such a way. But the generation of JAX-B Classfiles is a good candidate to run inside the build-process - so the resulting files aren´t checked into source control system. The configuration e.g. of the [jaxws-maven-plugin] is rather complex to work properly and one has to do some research, till all necessary configuration parameters are set properly ([something like this](https://github.com/jonashackt/soap-spring-boot-cxf/blob/master/pom.xml) has to be done - just have a look into the build section of the pom).
@@ -16,7 +17,9 @@ While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves
 * This works also for complex imports of many XSD files, that inherit other XSDs themselfs
 * The generated JAX-B Classfiles will be added to your projects classpath - ready to map & transform into whatever you want
 * Scanning your resource-Folder for the WSDL and configuring the jaxws-maven-plugin, so that non-absolute paths will be generated into @WebServiceClient-Class
+* non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
 * Extract the targetNamespace from the WSDL, generate the SEI and WebServiceClient annotated classes´ package names from it & write it together with the project´s package name into a cxf-spring-boot-maven.properties to enable Complete automation of Endpoint initialization in the [cxf-spring-boot-starter](https://github.com/codecentric/cxf-spring-boot-starter) ([documentation here](https://github.com/codecentric/cxf-spring-boot-starter#complete-automation-of-endpoint-initialization))
+* plugin is Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur
 
 ### HowTo
 
@@ -85,11 +88,42 @@ Therefore we also moved to the new dependencies inside our [pom.xml](pom.xml) - 
 
 
 
-### Dones
+### JDK 11 support
 
-* made the plugin Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur anymore
-* non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
-* use jaxws:wsimport-test for testrun
+As of JDK11 many deprecated packages aren't distributed with the JDK anymore - including `javax.xml.ws` (JAX-WS) and `javax.xml.bind` (JAX-B) (see [this post](https://blog.viadee.de/jaxb-und-soap-in-java-11)).
+
+Therefore we add the JAX-WS runtime to our pom.xml:
+
+```
+		<!-- JAXWS for Java 11 -->
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>${jaxws-ri.version}</version>
+			<type>pom</type>
+		</dependency>
+```
+
+Sadly the jaxws-maven-plugin [isn't JDK11 (nor JDK9) compatible](https://github.com/mojohaus/jaxws-maven-plugin/issues/54) atm! Therefore we use the a drop-in replacement inside our [BootCxfMojo](cxf-spring-boot-starter-maven-plugin/src/main/java/de/codecentric/cxf/BootCxfMojo.java), where this is fixed until the plugin gets released:
+
+```
+plugin(
+                    groupId("com.helger.maven"),
+                    artifactId("jaxws-maven-plugin"),
+                    version("2.6"),
+                    dependencies(
+                            dependency(
+                                    "org.jvnet.jaxb2_commons",
+                                    "jaxb2-namespace-prefix",
+                                    "1.3"),
+                            dependency(
+                                    "com.sun.xml.ws",
+                                    "jaxws-tools",
+                                    "2.3.2"))
+                    ),
+```
+
+This also needs the `com.sun.xml.ws.jaxws-tools` to be on the classpath, so we add this as a dependency too.
 
 
 ### Integration testing the plugin
