@@ -22,17 +22,7 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
     }
 
     @Test
-    public void plugin_should_be_executed() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_STEP_0_is_in_output() throws VerificationException {
+    public void plugin_output_should_look_good_in_log() throws VerificationException {
 
         // When
         verifier.executeGoal( "generate-sources" );
@@ -40,75 +30,12 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
         // Then
         verifier.verifyErrorFreeLog();
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN STEP 0: Scanning for WSDL file in src/main/resources");
-
-        // Reset the streams before executing the verifier
-        verifier.resetStreams();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_STEP_1_is_in_output() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN STEP 1: Found .wsdl-File");
-
-        // Reset the streams before executing the verifier
-        verifier.resetStreams();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_STEP_2_is_in_output() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN STEP 2: Generating JAX-B Classfiles.");
-
-        // Reset the streams before executing the verifier
-        verifier.resetStreams();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_setting_relative_wsdlLocation_is_in_output() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
+        verifier.verifyTextInLog("Processing: file:");
+        verifier.verifyTextInLog("jaxws:wsimport args: [-keep, -s, '");
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN setting relative wsdlLocation into @WebServiceClient:");
-
-        // Reset the streams before executing the verifier
-        verifier.resetStreams();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_STEP_4_is_in_output() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN STEP 4: Guessing SEI implementation´s package name & injecting it into cxf-spring-boot-maven.properties for later Autodetection of Endpoints...");
-
-        // Reset the streams before executing the verifier
-        verifier.resetStreams();
-    }
-
-    @Test
-    public void testCXF_BOOT_MAVEN_PLUGIN_STEP_5_is_in_output() throws VerificationException {
-
-        // When
-        verifier.executeGoal( "generate-sources" );
-
-        // Then
-        verifier.verifyErrorFreeLog();
         verifier.verifyTextInLog("CXF-BOOT-MAVEN-PLUGIN STEP 5: Extracting targetNamespace from WSDL, generating packageName from it with com.sun.tools.xjc.api.XJC (see wsgen, WSImportTool and WSDLModeler at line 2312 of the JAXWSRI) and injecting it into cxf-spring-boot-maven.properties for later Autodetection of Endpoints...");
 
         // Reset the streams before executing the verifier
