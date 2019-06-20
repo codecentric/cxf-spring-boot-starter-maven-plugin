@@ -78,7 +78,7 @@ Therefore we also moved to the new dependencies inside our [pom.xml](pom.xml) - 
 
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-core</artifactId>
+			<artifactId>jaxb-runtime</artifactId>
 			<version>${jaxb.version}</version>
 		</dependency>
 ```
