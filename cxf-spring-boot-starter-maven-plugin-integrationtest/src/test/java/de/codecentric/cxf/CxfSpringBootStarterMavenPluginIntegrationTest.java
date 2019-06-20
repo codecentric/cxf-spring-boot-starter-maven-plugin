@@ -16,6 +16,7 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
 
     @Before
     public void setUp() throws IOException, VerificationException {
+        // Given
         generationTestProjectDir = ResourceExtractor.simpleExtractResources( getClass(), "/generation-test-project" );
         verifier = new Verifier( generationTestProjectDir.getAbsolutePath(), "$HOME/.m2/settings.xml");
         verifier.setLogFileName("verifier-output.log");
