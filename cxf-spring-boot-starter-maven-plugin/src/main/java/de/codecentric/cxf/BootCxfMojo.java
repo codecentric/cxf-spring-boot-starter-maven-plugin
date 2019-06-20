@@ -102,8 +102,12 @@ public class BootCxfMojo extends AbstractMojo {
                             dependency(
                                     "org.jvnet.jaxb2_commons",
                                     "jaxb2-namespace-prefix",
-                                    "1.3"))
-                ),
+                                    "1.3"),
+                            dependency(
+                                    "com.sun.xml.ws",
+                                    "jaxws-tools",
+                                    "2.3.2"))
+                    ),
                 goal(jaxwsMavenPluginGoal),
                 configuration(
                     /*
