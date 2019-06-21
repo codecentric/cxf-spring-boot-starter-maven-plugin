@@ -95,18 +95,14 @@ public class BootCxfMojo extends AbstractMojo {
                  * in 2015, where it is developed further: https://github.com/mojohaus/jaxws-maven-plugin
                  */
                 plugin(
-                    groupId("com.helger.maven"),
+                    groupId("com.sun.xml.ws"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.6"),
+                    version("2.3.2"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",
                                     "jaxb2-namespace-prefix",
-                                    "1.3"),
-                            dependency(
-                                    "com.sun.xml.ws",
-                                    "jaxws-tools",
-                                    "2.3.2"))
+                                    "1.3"))
                     ),
                 goal(jaxwsMavenPluginGoal),
                 configuration(

@@ -104,27 +104,43 @@ Therefore we add the JAX-WS runtime to our pom.xml:
 		</dependency>
 ```
 
-Sadly the jaxws-maven-plugin [isn't JDK11 (nor JDK9) compatible](https://github.com/mojohaus/jaxws-maven-plugin/issues/54) atm! Therefore we use the a drop-in replacement inside our [BootCxfMojo](cxf-spring-boot-starter-maven-plugin/src/main/java/de/codecentric/cxf/BootCxfMojo.java), where this is fixed until the plugin gets released:
+Sadly the jaxws-maven-plugin [isn't JDK11 (nor JDK9) compatible](https://github.com/mojohaus/jaxws-maven-plugin/issues/54) atm! 
+
+__BUT__: Thanks so much to [mickaelbaron](https://github.com/mojohaus/jaxws-maven-plugin/issues/54#issuecomment-434323813) for stating, that the [mojohaus/jaxws-maven-plugin](https://github.com/mojohaus/jaxws-maven-plugin) is just deprecated and moved silently to [eclipse-ee4j/metro-jax-ws/jaxws-ri/jaxws-maven-plugin/](https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/jaxws-maven-plugin)!!!
 
 ```
 plugin(
-                    groupId("com.helger.maven"),
+                    groupId("com.sun.xml.ws"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.6"),
+                    version("2.3.2"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",
                                     "jaxb2-namespace-prefix",
-                                    "1.3"),
-                            dependency(
-                                    "com.sun.xml.ws",
-                                    "jaxws-tools",
-                                    "2.3.2"))
+                                    "1.3"))
                     ),
 ```
 
-This also needs the `com.sun.xml.ws.jaxws-tools` to be on the classpath, so we add this as a dependency too.
+With this maintained version of [com.sun.xml.ws.jaxws-maven-plugin](https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-maven-plugin) we are also able to run on all major JDK versions like a charm!
 
+
+##### Build on multiple JDKs locally
+
+On our local machine in most situations we only have one JDK installation. There are solutions like [jenv](https://www.jenv.be/), but as I really like Docker, we can also run our builds with it:
+
+```
+# OpenJDK 13 (latest version)
+docker run --rm -v "$PWD":/build/our/plugin -w /build/our/plugin maven:3-jdk-13 bash -c "mvn clean install"
+
+# OpenJDK 12 (latest version)
+docker run --rm -v "$PWD":/build/our/plugin -w /build/our/plugin maven:3-jdk-12 bash -c "mvn clean install"
+
+# OpenJDK 11 (latest version)
+docker run --rm -v "$PWD":/build/our/plugin -w /build/our/plugin maven:3-jdk-11 bash -c "mvn clean install"
+
+# OpenJDK 8 (latest version)
+docker run --rm -v "$PWD":/build/our/plugin -w /build/our/plugin maven:3-jdk-8 bash -c "mvn clean install"
+``` 
 
 ### Integration testing the plugin
 
@@ -515,7 +531,7 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
 
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
-[jaxws-maven-plugin]:http://www.mojohaus.org/jaxws-maven-plugin/
+[jaxws-maven-plugin]:https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/jaxws-maven-plugin
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
 [stackoverflow:eclipse-m2e-lifecycle]:http://stackoverflow.com/a/26447353/4964553
 [bipro.net]:https://www.bipro.net/
