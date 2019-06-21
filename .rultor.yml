@@ -3,7 +3,7 @@ decrypt:
   pubring.gpg: "repo/pubring.gpg.asc"
   secring.gpg: "repo/secring.gpg.asc"
 docker:
-  image: "maven:3-jdk-12"
+  image: "yegor256/java8"
 release:
   script: |
     mvn versions:set "-DnewVersion=${tag}"
