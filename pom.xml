@@ -7,11 +7,11 @@
 		<version>7</version>
 	</parent>
 	<groupId>de.codecentric</groupId>
-	<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
+	<artifactId>cxf-spring-boot-starter-maven-plugin-reactor</artifactId>
 	<version>2.1.6-SNAPSHOT</version>
-	<name>cxf-spring-boot-starter-maven-plugin</name>
-	<description>Maven plugin complementing the Boot starter for SOAP-Webservices with Apache CXF using JAX-WS &amp; JAXB with Annotations only</description>
-	<packaging>maven-plugin</packaging>	
+
+	<description>Reactor Maven project for the cxf-spring-boot-starter-maven-plugin</description>
+	<packaging>pom</packaging>
 	<url>https://github.com/codecentric/cxf-spring-boot-starter-maven-plugin</url>
 	<licenses>
 		<license>
@@ -44,21 +44,15 @@
 	   </snapshotRepository>
 	</distributionManagement>
 
+	<modules>
+		<module>cxf-spring-boot-starter-maven-plugin</module>
+		<module>cxf-spring-boot-starter-maven-plugin-integrationtest</module>
+	</modules>
+
     <properties>
         <java.version>1.8</java.version>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-
-		<!-- Project dependencies -->
-        <commons-io.version>2.6</commons-io.version>
-		<commons-lang3.version>3.9</commons-lang3.version>
-		<spring.version>5.1.7.RELEASE</spring.version>
-		<jaxb-xjc.version>2.3.2</jaxb-xjc.version>
-		<jaxb.version>2.3.0.1</jaxb.version>
-		<mojo-executor.version>2.3.0</mojo-executor.version>
-		<maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
-		<maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
-		<maven-plugin-api.version>3.6.0</maven-plugin-api.version>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
 
 		<!-- Maven Central Release tools -->
 		<versions-maven-plugin.version>2.7</versions-maven-plugin.version>
@@ -67,101 +61,6 @@
 		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     </properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven-plugin-api.version}</version>
-		</dependency>
-
-		<!-- dependencies to annotations -->
-		<dependency>
-			<groupId>org.apache.maven.plugin-tools</groupId>
-			<artifactId>maven-plugin-annotations</artifactId>
-			<version>${maven-plugin-annotations.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- To compose all needed JAX-WS-Maven-Plugins for generation of JAX-B-Classes and so on
-		see: http://stackoverflow.com/questions/526733/maven-plugin-executing-another-plugin -->
-	    <dependency>
-            <groupId>org.twdata.maven</groupId>
-            <artifactId>mojo-executor</artifactId>
-            <version>${mojo-executor.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-			</exclusions>
-	    </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-
-		<!-- Generate package Name of SEI and WebServiceClient for later
-		Autodetection of Endpoints in cxf-spring-boot-starter -->
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-xjc</artifactId>
-			<version>${jaxb-xjc.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-core</artifactId>
-			<version>${jaxb.version}</version>
-		</dependency>
-
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
-	
-	<build>
-		<plugins>
-		  <plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-plugin-plugin</artifactId>
-			<version>${maven-plugin-plugin.version}</version>
-			<executions>
-			  <execution>
-				<id>default-descriptor</id>
-				<phase>process-classes</phase>
-			  </execution>
-			  <!-- if you want to generate help goal -->
-			  <execution>
-				<id>help-goal</id>
-				<goals>
-				  <goal>helpmojo</goal>
-				</goals>
-			  </execution>
-			</executions>
-		  </plugin>
-		</plugins>
-  	</build>
 
 	<profiles>
 		<!-- plugins needed to deploy to Maven Central -->
