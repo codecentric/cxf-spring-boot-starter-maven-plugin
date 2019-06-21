@@ -6,7 +6,7 @@ cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 [![versionjaxb](https://img.shields.io/badge/org.glassfish.jaxb-2.3.2-brightgreen.svg)](github.com/eclipse-ee4j/jaxb-ri)
 [![versionjaxws](https://img.shields.io/badge/com.sun.xml.ws.jaxws-2.3.2-brightgreen.svg)](https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-rt)
 [![versionjava](https://img.shields.io/badge/jdk-8,_9,_11-brightgreen.svg?logo=java)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
-[![versionspring](https://img.shields.io/badge/spring-5.1.7_RELEASE-brightgreen.svg)](https://spring.io/)
+[![versionspring](https://img.shields.io/badge/spring-5.1.8_RELEASE-brightgreen.svg)](https://spring.io/)
 
 
 While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves as a Maven dependency, something that will be executed in the build-section is not delivered in such a way. But the generation of JAX-B Classfiles is a good candidate to run inside the build-process - so the resulting files aren´t checked into source control system. The configuration e.g. of the [jaxws-maven-plugin] is rather complex to work properly and one has to do some research, till all necessary configuration parameters are set properly ([something like this](https://github.com/jonashackt/soap-spring-boot-cxf/blob/master/pom.xml) has to be done - just have a look into the build section of the pom).
