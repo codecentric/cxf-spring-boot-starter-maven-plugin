@@ -144,6 +144,8 @@ docker run --rm -v "$PWD":/build/our/plugin -w /build/our/plugin maven:3-jdk-8 b
 
 ### Integration testing the plugin
 
+> When updating development/release version: don't forget to update [generation-test-project/pom.xml](cxf-spring-boot-starter-maven-plugin-integrationtest/src/test/resources/generation-test-project/pom.xml)!
+
 We want to avoid as many problems as possible, so we should also do integration tests for this plugin. 
 
 The [docs about testing Maven plugins](https://maven.apache.org/plugin-developers/plugin-testing.html) under the headline `Integration/Functional testing` advice us to use the [org.apache.maven.shared.maven-verifier](https://mvnrepository.com/artifact/org.apache.maven.shared/maven-verifier) plugin (__NOT the standard__ [maven-verifier-plugin](https://maven.apache.org/plugins/maven-verifier-plugin/)!!!), mind the groupId):
