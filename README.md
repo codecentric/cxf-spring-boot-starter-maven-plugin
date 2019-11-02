@@ -107,7 +107,7 @@ Therefore we add the JAX-WS runtime to our pom.xml:
 
 Sadly the jaxws-maven-plugin [isn't JDK11 (nor JDK9) compatible](https://github.com/mojohaus/jaxws-maven-plugin/issues/54) atm! 
 
-__BUT__: Thanks so much to [mickaelbaron](https://github.com/mojohaus/jaxws-maven-plugin/issues/54#issuecomment-434323813) for stating, that the [mojohaus/jaxws-maven-plugin](https://github.com/mojohaus/jaxws-maven-plugin) is just deprecated and moved silently to [eclipse-ee4j/metro-jax-ws/jaxws-ri/jaxws-maven-plugin/](https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/jaxws-maven-plugin)!!!
+__BUT__: Thanks so much to [mickaelbaron](https://github.com/mojohaus/jaxws-maven-plugin/issues/54#issuecomment-434323813) for stating, that the [mojohaus/jaxws-maven-plugin](https://github.com/mojohaus/jaxws-maven-plugin) is just deprecated and moved silently to [eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/extras/jaxws-maven-plugin](https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/extras/jaxws-maven-plugin)!!!
 
 ```
 plugin(
@@ -534,7 +534,7 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
 
 
 [cxf-spring-boot-starter]:https://github.com/codecentric/cxf-spring-boot-starter
-[jaxws-maven-plugin]:https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/jaxws-maven-plugin
+[jaxws-maven-plugin]:https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/extras/jaxws-maven-plugin
 [mojo-executor]:https://github.com/TimMoore/mojo-executor
 [stackoverflow:eclipse-m2e-lifecycle]:http://stackoverflow.com/a/26447353/4964553
 [bipro.net]:https://www.bipro.net/
