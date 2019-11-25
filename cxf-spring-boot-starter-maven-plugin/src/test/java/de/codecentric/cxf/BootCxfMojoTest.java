@@ -11,14 +11,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static de.codecentric.cxf.BootCxfMojo.readWsdlIntoString;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class BootCxfMojoTest {
 
@@ -27,6 +29,7 @@ public class BootCxfMojoTest {
     private BootCxfMojo bootCxfMojo = new BootCxfMojo();;
     private File resourcesDirectory = new File("src/test/resources");
     private String buildDirectory = new File("target/classes").getAbsolutePath();
+    private File wsld_search_directory = new File("src/test/resources");
 
     @Test public void
     find_Wsdl_in_classpath() throws IOException, MojoExecutionException {
@@ -108,6 +111,18 @@ public class BootCxfMojoTest {
         File cxfSpringBootMavenProperties = findCxfSpringBootMavenPropertiesInClasspath();
         assertThat(cxfSpringBootMavenProperties.getName(), is(equalTo(BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME)));
 
+    }
+
+    @Test public void
+    multiple_wsdl_search() {
+        List<String> WSDL_FILES = Arrays.stream(
+                wsld_search_directory.listFiles())
+                .filter(file -> file.getName()
+                        .contains(".wsdl"))
+                .map(String::valueOf)
+                .collect(Collectors.toList()
+                );
+        assertNotNull(WSDL_FILES);
     }
 
     @Test public void

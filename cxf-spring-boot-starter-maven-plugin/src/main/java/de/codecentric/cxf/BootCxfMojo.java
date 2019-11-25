@@ -16,10 +16,13 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -49,11 +52,27 @@ public class BootCxfMojo extends AbstractMojo {
     @Component
     private BuildPluginManager pluginManager;
 
-    public void execute() throws MojoExecutionException {
+    public void execute() {
 
         logWithPrefix("STEP 0: Scanning for WSDL file in src/main/resources");
 
-        File wsdl = findWsdl(mavenProject.getBasedir());
+        List<File> WSDL_FILES = Arrays.stream(
+                mavenProject.getBasedir().listFiles())
+                .filter(file -> file.getName()
+                        .contains(".wsdl"))
+                        .collect(Collectors.toList()
+                );
+
+        WSDL_FILES.forEach(wsdl -> {
+            try {
+                parseWSDL(wsdl);
+            } catch (MojoExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void parseWSDL(File wsdl) throws MojoExecutionException {
         String buildDirectory = mavenProject.getBuild().getOutputDirectory();
 
         logWithPrefix("STEP 1: Found .wsdl-File: " + wsdl.getPath());
@@ -192,6 +211,9 @@ public class BootCxfMojo extends AbstractMojo {
 
         filterOutWsdlsInsideBuildOutputFolder(wsdls);
 
+        wsdls.stream()
+                .forEach(file -> System.out.println(file.getName()));
+        System.out.println(wsdls.stream().count());
         Optional<File> wsdl = wsdls.stream().findFirst();
 
         if(wsdl.isPresent()) {
