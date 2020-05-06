@@ -38,7 +38,7 @@
 		<commons-lang3.version>3.10</commons-lang3.version>
 		<spring.version>5.2.6.RELEASE</spring.version>
 		<jaxb.version>2.3.3</jaxb.version>
-		<jaxws-ri.version>2.3.2-1</jaxws-ri.version>
+		<jaxws-ri.version>2.3.3</jaxws-ri.version>
 		<mojo-executor.version>2.3.1</mojo-executor.version>
 		<maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
 		<maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
