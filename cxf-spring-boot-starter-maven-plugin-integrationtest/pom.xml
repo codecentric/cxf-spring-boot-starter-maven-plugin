@@ -14,7 +14,7 @@
         <java.version>1.8</java.version>
 
 		<!-- Testing dependencies -->
-		<maven-verifier.version>1.7.1</maven-verifier.version>
+		<maven-verifier.version>1.7.2</maven-verifier.version>
 		<junit.version>4.13</junit.version>
     </properties>
 
