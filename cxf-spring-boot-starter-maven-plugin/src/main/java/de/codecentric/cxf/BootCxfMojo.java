@@ -93,11 +93,14 @@ public class BootCxfMojo extends AbstractMojo {
                  * Attention: The project has been moved from codehaus to project metro in 2007:
                  * https://jax-ws-commons.java.net/jaxws-maven-plugin/ and then back to codehaus
                  * in 2015, where it is developed further: https://github.com/mojohaus/jaxws-maven-plugin
+                 *
+                 * From 2019/20 on the https://github.com/mojohaus/jaxws-maven-plugin is deprecated and moved to
+                 * https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/extras/jaxws-maven-plugin
                  */
                 plugin(
                     groupId("com.sun.xml.ws"),
                     artifactId("jaxws-maven-plugin"),
-                    version("2.3.2"),
+                    version("3.0.0"),
                     dependencies(
                             dependency(
                                     "org.jvnet.jaxb2_commons",

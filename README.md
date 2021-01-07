@@ -6,7 +6,8 @@ cxf-spring-boot-starter-maven-plugin complementing cxf-spring-boot-starter
 [![renovateenabled](https://img.shields.io/badge/renovate-enabled-yellow)](https://renovatebot.com)
 [![versionjaxb](https://img.shields.io/badge/dynamic/xml?color=brightgreen&url=https://raw.githubusercontent.com/codecentric/cxf-spring-boot-starter-maven-plugin/master/cxf-spring-boot-starter-maven-plugin/pom.xml&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27jaxb.version%27%5D&label=org.glassfish.jaxb)](github.com/eclipse-ee4j/jaxb-ri)
 [![versionjaxws](https://img.shields.io/badge/dynamic/xml?color=brightgreen&url=https://raw.githubusercontent.com/codecentric/cxf-spring-boot-starter-maven-plugin/master/cxf-spring-boot-starter-maven-plugin/pom.xml&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27jaxws-ri.version%27%5D&label=com.sun.xml.ws.jaxws)](https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-rt)
-[![versionjava](https://img.shields.io/badge/jdk-8,_9,_11-brightgreen.svg?logo=java)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![versionjava](https://img.shields.io/badge/jdk-8,_11,_15-brightgreen.svg?logo=java)](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![versionjaxws-maven-plugin](https://img.shields.io/badge/jaxws_maven_plugin-3.0.0-brightgreen.svg)](https://github.com/eclipse-ee4j/metro-jax-ws/tree/master/jaxws-ri/extras/jaxws-maven-plugin)
 [![versionspring](https://img.shields.io/badge/dynamic/xml?color=brightgreen&url=https://raw.githubusercontent.com/codecentric/cxf-spring-boot-starter-maven-plugin/master/cxf-spring-boot-starter-maven-plugin/pom.xml&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27properties%27%5D%2F%2A%5Blocal-name%28%29%3D%27spring.version%27%5D&label=spring)](https://spring.io/)
 
 
