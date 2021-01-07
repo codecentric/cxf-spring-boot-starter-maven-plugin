@@ -4,10 +4,9 @@
 	<parent>
 		<groupId>de.codecentric</groupId>
 		<artifactId>cxf-spring-boot-starter-maven-plugin-reactor</artifactId>
-		<version>2.3.1-jaxb-jaxws-3.0.0-M4</version>
+		<version>2.4.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cxf-spring-boot-starter-maven-plugin</artifactId>
-	<version>2.3.1-SNAPSHOT</version>
 	<name>cxf-spring-boot-starter-maven-plugin</name>
 	<description>Maven plugin complementing the Boot starter for SOAP-Webservices with Apache CXF using JAX-WS &amp; JAXB with Annotations only</description>
 	<packaging>maven-plugin</packaging>	
@@ -45,7 +44,8 @@
 		<maven-plugin-api.version>3.6.3</maven-plugin-api.version>
 
 		<!-- Testing dependencies -->
-		<junit.version>4.13.1</junit.version>
+		<junit.version>5.7.0</junit.version>
+		<hamcrest.version>2.2</hamcrest.version>
     </properties>
 
 	<dependencies>
@@ -113,9 +113,16 @@
 
 		<!-- Test -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
 			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>${hamcrest.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -130,24 +137,31 @@
 	
 	<build>
 		<plugins>
-		  <plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-plugin-plugin</artifactId>
-			<version>${maven-plugin-plugin.version}</version>
-			<executions>
-			  <execution>
-				<id>default-descriptor</id>
-				<phase>process-classes</phase>
-			  </execution>
-			  <!-- if you want to generate help goal -->
-			  <execution>
-				<id>help-goal</id>
-				<goals>
-				  <goal>helpmojo</goal>
-				</goals>
-			  </execution>
-			</executions>
-		  </plugin>
+			<!-- With JUnit 5 explicitely needed to let our tests run with Maven & as there seems to be a transitively
+				added older surefire-plugin, that doesnt support JUnit 5 as described in https://stackoverflow.com/a/49019437/4964553 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>${maven-plugin-plugin.version}</version>
+				<executions>
+				  <execution>
+					<id>default-descriptor</id>
+					<phase>process-classes</phase>
+				  </execution>
+				  <!-- if you want to generate help goal -->
+				  <execution>
+					<id>help-goal</id>
+					<goals>
+					  <goal>helpmojo</goal>
+					</goals>
+				  </execution>
+				</executions>
+			</plugin>
 		</plugins>
   	</build>
 	

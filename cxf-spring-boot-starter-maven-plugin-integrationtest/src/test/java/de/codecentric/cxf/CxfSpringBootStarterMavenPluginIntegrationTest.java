@@ -3,8 +3,8 @@ package de.codecentric.cxf;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class CxfSpringBootStarterMavenPluginIntegrationTest {
     private File generationTestProjectDir;
     private Verifier verifier;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, VerificationException {
         // Given
         generationTestProjectDir = ResourceExtractor.simpleExtractResources( getClass(), "/generation-test-project" );
