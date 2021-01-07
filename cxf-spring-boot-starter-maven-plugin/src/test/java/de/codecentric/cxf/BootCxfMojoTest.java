@@ -2,7 +2,7 @@ package de.codecentric.cxf;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -14,11 +14,9 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static de.codecentric.cxf.BootCxfMojo.readWsdlIntoString;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BootCxfMojoTest {
 
@@ -28,12 +26,13 @@ public class BootCxfMojoTest {
     private File resourcesDirectory = new File("src/test/resources");
     private String buildDirectory = new File("target/classes").getAbsolutePath();
 
-    @Test public void
+    @Test
+    public void
     find_Wsdl_in_classpath() throws IOException, MojoExecutionException {
 
         File wsdl = bootCxfMojo.findWsdl(resourcesDirectory);
 
-        assertThat(wsdl.getName(), is(equalTo(weatherServiceWsdl.getName())));
+        assertEquals(weatherServiceWsdl.getName(), wsdl.getName());
     }
 
     @Test public void
@@ -42,7 +41,7 @@ public class BootCxfMojoTest {
         File wsdl = bootCxfMojo.findWsdl(resourcesDirectory);
         String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(readWsdlIntoString(wsdl));
 
-        assertThat(targetNamespace, is(equalTo("http://www.codecentric.de/namespace/weatherservice/")));
+        assertEquals("http://www.codecentric.de/namespace/weatherservice/", targetNamespace);
     }
 
     @Test public void
@@ -52,7 +51,7 @@ public class BootCxfMojoTest {
         String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(readWsdlIntoString(wsdl));
         String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
 
-        assertThat(packageName, is(equalTo("de.codecentric.namespace.weatherservice")));
+        assertEquals("de.codecentric.namespace.weatherservice", packageName);
     }
 
     @Test public void
@@ -67,7 +66,7 @@ public class BootCxfMojoTest {
         String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
         String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
 
-        assertThat(packageName, is(equalTo("ch.abc.namespase.filsearch.v5")));
+        assertEquals("ch.abc.namespase.filsearch.v5", packageName);
     }
 
     @Test public void
@@ -82,7 +81,7 @@ public class BootCxfMojoTest {
         String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
         String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
 
-        assertThat(packageName, is(equalTo("schemas.dynamics.microsoft.page.customers")));
+        assertEquals("schemas.dynamics.microsoft.page.customers", packageName);
     }
 
     @Test public void
@@ -97,7 +96,7 @@ public class BootCxfMojoTest {
         String targetNamespace = bootCxfMojo.readTargetNamespaceFromWsdl(wsdl);
         String packageName = bootCxfMojo.generatePackageNameFromTargetNamespaceInWsdl(targetNamespace);
 
-        assertThat(packageName, is(equalTo("com.comarch.crm.tag.webservice_v26")));
+        assertEquals("com.comarch.crm.tag.webservice_v26", packageName);
     }
 
     @Test public void
@@ -106,7 +105,7 @@ public class BootCxfMojoTest {
         bootCxfMojo.writeCxfSpringBootMavenProperties(buildDirectory, "foo.key", "foo.bar");
 
         File cxfSpringBootMavenProperties = findCxfSpringBootMavenPropertiesInClasspath();
-        assertThat(cxfSpringBootMavenProperties.getName(), is(equalTo(BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME)));
+        assertEquals(BootCxfMojo.CXF_SPRING_BOOT_MAVEN_PROPERTIES_FILE_NAME, cxfSpringBootMavenProperties.getName());
 
     }
 
@@ -116,7 +115,7 @@ public class BootCxfMojoTest {
         bootCxfMojo.cleanCxfSpringBootMavenProperties(buildDirectory);
 
         String content = FileUtils.readFileToString(findCxfSpringBootMavenPropertiesInClasspath(), Charset.defaultCharset());
-        assertThat(content.length(), is(0));
+        assertEquals(0, content.length());
     }
 
     @Test public void
