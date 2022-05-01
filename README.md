@@ -16,18 +16,18 @@ While a spring-boot-starter like [cxf-spring-boot-starter] generally only serves
 ### Features include:
 
 * Generating all necessary Java-Classes using JAX-B from your WSDL/XSDs, complementing the [cxf-spring-boot-starter]
-* This works also for complex imports of many XSD files, that inherit other XSDs themselfs
+* This also works for complex imports of many XSD files that inherit other XSDs themselves
 * The generated JAX-B Classfiles will be added to your projects classpath - ready to map & transform into whatever you want
 * Scanning your resource-Folder for the WSDL and configuring the jaxws-maven-plugin, so that non-absolute paths will be generated into @WebServiceClient-Class
-* non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
-* Extract the targetNamespace from the WSDL, generate the SEI and WebServiceClient annotated classes´ package names from it & write it together with the project´s package name into a cxf-spring-boot-maven.properties to enable Complete automation of Endpoint initialization in the [cxf-spring-boot-starter](https://github.com/codecentric/cxf-spring-boot-starter) ([documentation here](https://github.com/codecentric/cxf-spring-boot-starter#complete-automation-of-endpoint-initialization))
-* plugin is Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur
+* Non-absolute paths will be generated into @WebService and @WebServiceClient-Classes (so that one can initialize the Apache CXF endpoint 100% contract-first)
+* Extract the targetNamespace from the WSDL, generate the SEI and WebServiceClient annotated classes package names from it & write it together with the project´s package name into a cxf-spring-boot-maven.properties to enable Complete automation of Endpoint initialization in the [cxf-spring-boot-starter](https://github.com/codecentric/cxf-spring-boot-starter) ([documentation here](https://github.com/codecentric/cxf-spring-boot-starter#complete-automation-of-endpoint-initialization))
+* Plugin is Eclipse m2e compatible (see [stackoverflow:eclipse-m2e-lifecycle] and [https://wiki.eclipse.org/M2E_compatible_maven_plugins](https://wiki.eclipse.org/M2E_compatible_maven_plugins), so no Plugin execution not covered by lifecycle configuration”-Error should accur
 
 ### HowTo
 
 * Put your WSDL into some folder under __/src/main/resources/__ OR __/src/test/resources/__ - and add your XSDs, so they could be imported correct (relatively)
 * If you want to tweak your Namespace-Names, put a binding.xml into the same folder, where your WSDL resides
-* add this plugin to your pom´s build-section:
+* Add this plugin to your pom´s build-section:
 
 ```
 <build>
