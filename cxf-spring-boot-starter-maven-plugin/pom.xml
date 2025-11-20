@@ -40,7 +40,7 @@
 		<jaxws-ri.version>3.0.0</jaxws-ri.version>
 		<mojo-executor.version>2.3.1</mojo-executor.version>
 		<maven-plugin-plugin.version>3.15.1</maven-plugin-plugin.version>
-		<maven-plugin-annotations.version>3.15.1</maven-plugin-annotations.version>
+		<maven-plugin-annotations.version>3.15.2</maven-plugin-annotations.version>
 		<maven-plugin-api.version>3.9.11</maven-plugin-api.version>
 
 		<!-- Testing dependencies -->
