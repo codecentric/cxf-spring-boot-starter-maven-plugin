@@ -45,7 +45,7 @@
 
 		<!-- Testing dependencies -->
 		<junit.version>5.14.4</junit.version>
-		<hamcrest.version>2.2</hamcrest.version>
+		<hamcrest.version>3.0</hamcrest.version>
     </properties>
 
 	<dependencies>
